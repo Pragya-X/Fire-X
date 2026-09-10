@@ -4,7 +4,7 @@
 
 SIH 2026 project brief: PS **26162**, NTRO · Software · Disaster Management.
 
-**Current status: DATA BLOCKED — `training_ready=false`.** The software can prepare and review observations. Representative India data, industrial and land-cover references, and independently reviewed labels are still missing. There is no validated India classifier or measured project-model performance.
+**Current status: DATA BLOCKED — `training_ready=false`.** The software can prepare and review observations. Representative India data, industrial and land-cover references, and independently reviewed labels are still missing. There is no validated India classifier or measured project-model performance. 
 
 ## Problem and proposed solution
 
