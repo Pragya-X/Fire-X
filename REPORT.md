@@ -7,7 +7,7 @@ Satellite thermal detections are useful for finding unusual heat, but they do no
 FIRE-X explores this problem for an India-focused Smart India Hackathon project. It is a working review and dataset-preparation prototype. A representative India training dataset has not yet been supplied.
 
 ## Objectives
-
+ 
 - Preserve and validate original FIRMS observations.
 - Group related detections into candidate events.
 - Add industrial, land-cover and historical context without inventing missing values.
