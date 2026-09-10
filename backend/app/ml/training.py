@@ -171,14 +171,14 @@ def train(path: Path, output: Path) -> dict:
     from sklearn.impute import SimpleImputer
     from sklearn.preprocessing import StandardScaler, LabelEncoder
     from sklearn.linear_model import LogisticRegression
-    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.ensemble import HistGradientBoostingClassifier
     from sklearn.inspection import permutation_importance
     from app.ml.evaluation import evaluate
     import sklearn
     import joblib
     output.mkdir(parents=True,exist_ok=True)
     models = {'logistic_regression':LogisticRegression(max_iter=3000, class_weight='balanced',random_state=42),
-              'random_forest':RandomForestClassifier(n_estimators=300,class_weight='balanced',random_state=42,n_jobs=-1)}
+              'hist_gradient_boosting':HistGradientBoostingClassifier(max_iter=300,random_state=42)}
     unavailable = {}
     for name, module, cls, kwargs in (
         ('lightgbm','lightgbm','LGBMClassifier',{'n_estimators':200,'random_state':42,'verbosity':-1}),

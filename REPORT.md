@@ -40,7 +40,7 @@ Required inputs are representative India FIRMS exports, industrial facilities an
 5. Inspect clustering and evidence; save labels through independent review.
 6. Prepare facility/location groups and temporal splits with the existing purge.
 7. Run the readiness gate. Missing data or evidence blocks training.
-8. Once authorized and ready, compare Logistic Regression, Random Forest and required optional models using validation data. Reserve test data for the selected model.
+8. Once authorized and ready, compare Logistic Regression, HistGradientBoosting and required optional models using validation data. Reserve test data for the selected model.
 
 The evaluation code supports class-wise metrics, confusion matrices and calibration diagnostics. These are implementation capabilities, not results: no real project evaluation has been performed.
 

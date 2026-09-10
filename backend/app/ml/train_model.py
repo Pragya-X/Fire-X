@@ -1,8 +1,8 @@
 """Train the FIRE-X baseline classifier.
 
 Generates synthetic (but realistic) training data from the same feature
-distributions the demo seed data uses, trains a Random Forest (and XGBoost when
-installed), evaluates on a holdout split and writes:
+distributions the demo seed data uses, trains a HistGradientBoosting classifier
+(and XGBoost when installed), evaluates on a holdout split and writes:
 
     ml/models/model.pkl
     ml/models/metrics.json
@@ -19,7 +19,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
@@ -158,20 +158,21 @@ def main() -> None:
     y = np.array(y)
     Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, random_state=SEED, stratify=y)
 
-    model = RandomForestClassifier(n_estimators=200, max_depth=14, min_samples_leaf=3, random_state=SEED, n_jobs=-1)
+    # Use Histogram-based Gradient Boosting instead of heavy iterative Random Forests
+    model = HistGradientBoostingClassifier(max_iter=200, max_depth=14, min_samples_leaf=3, random_state=SEED)
     model.fit(Xtr, ytr)
 
     acc = accuracy_score(yte, model.predict(Xte))
     report = classification_report(yte, model.predict(Xte), output_dict=True, zero_division=0)
 
     metrics = {
-        "model": "RandomForest",
+        "model": "HistGradientBoosting",
         "n_samples": N_SAMPLES,
         "test_accuracy": round(acc, 4),
         "classification_report": {k: v for k, v in report.items() if isinstance(v, dict)},
         "note": "Trained on synthetic baseline data - demonstration model, not a production evaluation.",
     }
-    print(f"Trained RandomForest - test accuracy {acc:.4f}")
+    print(f"Trained HistGradientBoosting - test accuracy {acc:.4f}")
 
     # Optional XGBoost upgrade
     try:

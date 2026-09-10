@@ -50,7 +50,7 @@ The existing filenames preserve useful CLI contracts. One giant `routes.py` or `
 
 The reviewed-event path uses **evidence rules** until an operator approves a model against the existing real-data gate. Without sufficient evidence it returns `Unknown`, unavailable confidence and an explanation. Persistence and FRP anomaly indicators are descriptive heuristics, not calibrated probabilities. The separate legacy hotspot dashboard uses heuristic classifications and risk scores.
 
-Offline training, evaluation and optional SHAP/anomaly tooling exist, but have no representative project evaluation. No model was trained during this refactor. Legacy demo artifacts cannot replace reviewed event models.
+Offline training uses **scikit-learn's HistGradientBoostingClassifier** — a histogram-based gradient boosting architecture optimized for speed and memory efficiency over traditional Random Forest (which runs heavy iterative tree loops). Optional XGBoost/LightGBM/CatBoost boosters are evaluated when installed. Evaluation and optional SHAP/anomaly tooling exist, but have no representative project evaluation. No model was trained during this refactor. Legacy demo artifacts cannot replace reviewed event models.
 
 ## Data sources and separation
 

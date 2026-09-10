@@ -21,7 +21,7 @@ Frontend build/typecheck, native PostGIS, containers, real-model evaluation and 
 | Labeling system | `backend/app/ml/labels.py`; `backend/app/routers/thermal_events.py` | test_reviewed_training.py; test_event_workspace.py; browser workflow | Workflow verified; no real labels supplied |
 | Training dataset | `backend/app/ml/training.py` | reports/ml/training_readiness.json | Zero eligible rows; real dataset and label quality still unassessed |
 | Leakage-safe splitting | `backend/app/ml/splits.py` | test_reviewed_training.py | Grouping/purge guards tested; real collection still requires overlap and split review |
-| Model training | `backend/app/ml/training.py` | test_blocked_training_never_fits | Real training blocked; optional boosters not installed/run |
+| Model training | `backend/app/ml/training.py` — uses optimized `HistGradientBoostingClassifier` (histogram-based gradient boosting) instead of iterative Random Forest for efficient inference | test_blocked_training_never_fits | Real training blocked; optional boosters not installed/run |
 | Model evaluation | `backend/app/ml/evaluation.py` | test_metric_values_are_computed_and_absent_class_is_unavailable; test_reliability_bins_cover_extremes_and_edges | Metric arithmetic tested; no project performance, intervals or external benchmark |
 | Explainability | `backend/app/services/event_intelligence.py` | test_event_model_never_loads_unapproved_artifact; explanation API test | No approved model/SHAP library; real attribution path unexecuted |
 | Anomaly detection | `backend/app/ml/anomaly.py`; `backend/app/ml/normal_reviews.py`; `backend/app/services/event_intelligence.py` | statistical anomaly and normal-review tests | Learned anomaly fitting/evaluation/deployment unavailable |
