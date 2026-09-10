@@ -13,6 +13,11 @@
   color-scheme: light;
 }
 
+html.dark-theme,
+.dark-theme body {
+  background-color: var(--color-base-dark, #04070d);
+  color: var(--color-text-primary-dark, #e2e8f0);
+}
 .dark-theme {
   --color-base: #04070d;
   --color-base-panel: #0a101c;

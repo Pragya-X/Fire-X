@@ -17,6 +17,11 @@ export function Topbar({ onMenu, pathname }: { onMenu: () => void; pathname: str
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    if (theme === "dark") document.documentElement.classList.add("dark-theme");
+    else document.documentElement.classList.remove("dark-theme");
+  }, [theme]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ label: string; href: string; meta: string }[]>([]);
   const [searching, setSearching] = useState(false);
@@ -86,7 +91,10 @@ export function Topbar({ onMenu, pathname }: { onMenu: () => void; pathname: str
         </div>
 
         <div className="relative">
-          <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label={`Notifications, ${unread} unread`} className="relative">
+          <Button variant="ghost" size="icon" onClick={() => setTheme(t => t === "light" ? "dark" : "light")} aria-label="Toggle theme" className="rounded-full">
+          <span className="text-xs font-bold">{theme === "dark" ? "☀" : "☾"}</span>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label={`Notifications, ${unread} unread`} className="relative">
             <Bell className="h-5 w-5" />
             {unread > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-critical px-1 text-[9px] font-bold text-slate-900">
