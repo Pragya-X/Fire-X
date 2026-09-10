@@ -280,6 +280,11 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <p className="mt-5 text-center text-[12px] text-slate-500">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="font-medium text-sky-400 transition-colors hover:text-sky-300">Sign up</Link>
+          </p>
+
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-[10px] text-slate-600">
