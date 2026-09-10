@@ -46,7 +46,7 @@ export default function IngestionPage() {
   };
 
   const actions = [
-    { key: "firms", label: "Sync FIRMS", desc: "NASA FIRMS thermal anomalies; demo fallback requires demo mode", icon: <Satellite className="h-4 w-4" />, fn: () => run("firms", ingestFirms), allowed: true },
+    { key: "firms", label: "Sync Live NASA Data", desc: "Pull real-time thermal anomalies from NASA FIRMS", icon: <Satellite className="h-4 w-4" />, fn: () => run("firms", ingestFirms), allowed: true },
     { key: "demo", label: "Sync demo batch", desc: "Generate a demonstration detection batch", icon: <CloudDownload className="h-4 w-4" />, fn: () => run("demo", ingestDemo), allowed: demoMode },
     { key: "osm", label: "Sync OSM", desc: "Fetch OpenStreetMap infrastructure; seeded fallback requires demo mode", icon: <Map className="h-4 w-4" />, fn: () => run("osm", ingestOsm), allowed: true },
     { key: "landcover", label: "Preview demo land cover", desc: "Read seeded polygons; does not install real references", icon: <Database className="h-4 w-4" />, fn: () => run("landcover", ingestLandcover), allowed: demoMode },
