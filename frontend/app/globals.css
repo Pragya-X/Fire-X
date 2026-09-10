@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-base: #ffffff;
+  --color-base-panel: #f8fafc;
+  --color-base-raised: #f1f5f9;
+  --color-base-border: #e2e8f0;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  color-scheme: light;
+}
+
+.dark-theme {
+  --color-base: #04070d;
+  --color-base-panel: #0a101c;
+  --color-base-raised: #0f172a;
+  --color-base-border: #1e293b;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-text-primary);
+  @apply antialiased;
+}
+
+/* Thin scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+/* MapLibre overrides for dark theme */
+.maplibregl-ctrl-group {
+  background: #0a101c !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-group button {
+  color: #cbd5e1;
+}
+.maplibregl-ctrl-group button:hover {
+  background: rgba(51, 65, 85, 0.6) !important;
+}
+.maplibregl-ctrl-attrib {
+  background: rgba(4, 7, 13, 0.7) !important;
+  color: #64748b !important;
+  font-size: 9px !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: #94a3b8 !important;
+}
+.maplibregl-popup-content {
+  background: #0a101c !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 8px !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
+}
+.maplibregl-popup-tip {
+  border-top-color: #0a101c !important;
+}
+
+/* Critical MapLibre GL canvas styles - ensures map renders correctly */
+.maplibregl-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.maplibregl-canvas-container,
+.maplibregl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.maplibregl-canvas {
+  outline: none;
+}

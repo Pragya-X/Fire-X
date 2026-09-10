@@ -1,0 +1,27 @@
+{
+  "template_only": true,
+  "status": "NOT_SUPPLIED",
+  "requested_region": "India",
+  "dataset_name": null,
+  "provider": null,
+  "product": null,
+  "product_version": null,
+  "source_url_or_reference": null,
+  "retrieved_at_utc": null,
+  "license_or_usage_terms": null,
+  "input_format": null,
+  "input_crs": null,
+  "coordinate_axis_order": null,
+  "acquisition_start_utc": null,
+  "acquisition_end_utc": null,
+  "sensors": [],
+  "coverage_description": null,
+  "known_gaps_or_exclusions": null,
+  "files": [],
+  "file_entry_required_fields": [
+    "relative_path",
+    "sha256",
+    "bytes"
+  ],
+  "notes": "Inventory template only. Populate from actual supplied files; not ingested automatically and not a readiness approval."
+}

@@ -1,0 +1,6 @@
+{
+  "representativeness": { "approved": false, "reviewer": "", "reviewed_at": null, "event_sha256": "", "evidence": [] },
+  "references": { "approved": false, "reviewer": "", "reviewed_at": null, "event_sha256": "", "evidence": [] },
+  "temporal_history": { "approved": false, "reviewer": "", "reviewed_at": null, "event_sha256": "", "evidence": [] },
+  "clustering": { "approved": false, "reviewer": "", "reviewed_at": null, "event_sha256": "", "evidence": [] }
+}

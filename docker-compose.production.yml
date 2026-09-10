@@ -1,0 +1,31 @@
+# Use: docker compose -f docker-compose.yml -f docker-compose.production.yml config
+# This is deployment tooling; execution still requires a verified PostGIS host and TLS ingress.
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a unique database password}
+    ports: !reset []
+  backend:
+    environment:
+      ENV: production
+      DEBUG: "false"
+      DEMO_MODE: "false"
+      ML_MODE: rules
+      DATABASE_URL: ${DATABASE_URL:?Set URL-encoded PostgreSQL credentials for the postgres service}
+      JWT_SECRET: ${JWT_SECRET:?Set a unique 32+ character JWT secret}
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set explicit HTTPS frontend origin}
+      FRONTEND_URL: ${FRONTEND_URL:?Set HTTPS frontend URL}
+    volumes:
+      - event_data:/app/data
+      - event_uploads:/app/uploads
+    restart: unless-stopped
+  frontend:
+    build:
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:?Set HTTPS API URL reachable from users browsers}
+    environment:
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:?Set HTTPS API URL}
+    restart: unless-stopped
+volumes:
+  event_data:
+  event_uploads:

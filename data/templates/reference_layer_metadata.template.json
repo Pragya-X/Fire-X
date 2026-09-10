@@ -1,0 +1,23 @@
+{
+  "template_only": true,
+  "status": "NOT_SUPPLIED",
+  "layer_name": null,
+  "role": null,
+  "provider": null,
+  "source_reference": null,
+  "version": null,
+  "retrieved_at_utc": null,
+  "license": null,
+  "file_path": null,
+  "sha256": null,
+  "input_crs": null,
+  "coordinate_axis_order": null,
+  "geometry_types": [],
+  "stable_id_property": null,
+  "category_property": null,
+  "category_map": {},
+  "valid_at_utc": null,
+  "surveyed_coverage_source": null,
+  "coverage_limitations": null,
+  "notes": "Documentation sidecar only. The loader consumes the reference bundle and actual GeoJSON/Overpass files."
+}

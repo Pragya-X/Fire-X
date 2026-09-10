@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "layers": [
+    {
+      "name": "industrial",
+      "role": "industrial",
+      "path": "references/industrial.geojson",
+      "format": "geojson",
+      "source": "REPLACE_WITH_REAL_EXPORT_SOURCE",
+      "version": "REPLACE_WITH_EXPORT_DATE_OR_VERSION",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "landcover",
+      "role": "landcover",
+      "path": "references/landcover.geojson",
+      "format": "geojson",
+      "source": "REPLACE_WITH_REAL_LANDCOVER_SOURCE",
+      "version": "REPLACE_WITH_PRODUCT_VERSION_AND_DATE",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "administrative",
+      "role": "administrative",
+      "path": "references/administrative.geojson",
+      "format": "geojson",
+      "source": "REPLACE_WITH_BOUNDARY_SOURCE",
+      "version": "REPLACE_WITH_BOUNDARY_VERSION",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "transport",
+      "role": "transport",
+      "path": "references/transport.geojson",
+      "format": "geojson",
+      "source": "REPLACE_WITH_TRANSPORT_SOURCE",
+      "version": "REPLACE_WITH_EXPORT_DATE",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "water",
+      "role": "water",
+      "path": "references/water.geojson",
+      "format": "geojson",
+      "source": "REPLACE_WITH_WATER_SOURCE",
+      "version": "REPLACE_WITH_EXPORT_DATE",
+      "crs": "EPSG:4326"
+    }
+  ]
+}

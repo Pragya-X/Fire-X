@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "layers": [
+    {
+      "name": "industrial",
+      "role": "industrial",
+      "path": "references/industrial.geojson",
+      "format": "geojson",
+      "source": "",
+      "version": "",
+      "crs": ""
+    },
+    {
+      "name": "landcover",
+      "role": "landcover",
+      "path": "references/landcover.geojson",
+      "format": "geojson",
+      "source": "",
+      "version": "",
+      "crs": ""
+    },
+    {
+      "name": "administrative",
+      "role": "administrative",
+      "path": "references/administrative.geojson",
+      "format": "geojson",
+      "source": "",
+      "version": "",
+      "crs": ""
+    },
+    {
+      "name": "transport",
+      "role": "transport",
+      "path": "references/transport.geojson",
+      "format": "geojson",
+      "source": "",
+      "version": "",
+      "crs": ""
+    },
+    {
+      "name": "water",
+      "role": "water",
+      "path": "references/water.geojson",
+      "format": "geojson",
+      "source": "",
+      "version": "",
+      "crs": ""
+    }
+  ]
+}

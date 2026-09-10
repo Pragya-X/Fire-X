@@ -1,0 +1,119 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Event Id",
+      "type": "string"
+    },
+    "label": {
+      "enum": [
+        "Industrial Fire",
+        "Persistent Industrial Source",
+        "Wildfire",
+        "Agricultural Burning",
+        "Gas Flare",
+        "Mining",
+        "Other",
+        "Unknown"
+      ],
+      "title": "Label",
+      "type": "string"
+    },
+    "review_status": {
+      "default": "draft",
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "rejected"
+      ],
+      "title": "Review Status",
+      "type": "string"
+    },
+    "annotator": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Annotator",
+      "type": "string"
+    },
+    "reviewer": {
+      "anyOf": [
+        {
+          "maxLength": 255,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewer"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "quality": {
+      "default": "C",
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ],
+      "title": "Quality",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 50,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "source": {
+      "default": "",
+      "maxLength": 2000,
+      "title": "Source",
+      "type": "string"
+    },
+    "notes": {
+      "default": "",
+      "maxLength": 10000,
+      "title": "Notes",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewed At"
+    }
+  },
+  "required": [
+    "event_id",
+    "label",
+    "annotator"
+  ],
+  "title": "Annotation",
+  "type": "object"
+}

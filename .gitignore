@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Builds
+.next/
+out/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Databases / runtime data
+*.db
+*.sqlite
+*.sqlite3
+backend/uploads/*
+!backend/uploads/.gitkeep
+ml/models/*.pkl
+ml/models/metrics.json
+ml/models/*
+!ml/models/.gitkeep
+*.tsbuildinfo
+/data/outbox/
+/data/landcover.geojson
+/data/network.geojson
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+# Generated observation/event datasets (keep small documented source samples)
+data/raw/firms/
+data/processed/
+data/ml/
+ml/models/*.joblib
+ml/models/*metadata.json
+reports/ml/*.csv
+
+# User-supplied reference geometry and local source configuration
+/data/references/*
+!/data/references/README.md
+/data/reference_bundle.json
+
+# Local verification artifacts
+.coverage
+.coverage.*
+coverage/
+*.tmp
+*.temp
+*.swp
+*~
+htmlcov/
+frontend/test-results/
+frontend/playwright-report/
+# Human-reviewed local data and evidence
+/data/labels/
+/data/dataset_reviews.json
+/data/normal_reviews.json
+
+# Real acquisition files and review evidence stay local; keep input guides.
+/data/incoming/**
+!/data/incoming/**/
+!/data/incoming/**/README.md
+/data/reviews/evidence/**
+!/data/reviews/evidence/README.md
+/data/reference_sources/
+/data/experiments/
+/reports/**
+!/reports/**/
+!/reports/**/README.md
