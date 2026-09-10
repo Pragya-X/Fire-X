@@ -72,7 +72,7 @@ export default function HomePage() {
     <div className="flex h-full flex-col gap-4">
       <div>
         <h1 className="text-lg font-bold text-secondary">Home</h1>
-        <p className="text-xs text-muted">Latest stored hotspots. The default local setup uses demo data; source status appears below.</p>
+        <p className="text-xs text-muted">Latest stored hotspots powered by live NASA FIRMS integration.</p>
       </div>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {kpis.map((k) => (
