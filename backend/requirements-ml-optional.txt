@@ -1,0 +1,6 @@
+# Optional experimental estimators and explanations. Install only in the ML environment.
+# Resolve and lock versions in that environment before a reproducible real-data run.
+lightgbm>=4,<5
+xgboost>=2,<4
+catboost>=1.2,<2
+shap>=0.46,<1
