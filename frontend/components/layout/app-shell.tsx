@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/login");
+    if (!loading && !user) router.replace("/landing");
   }, [loading, user, router]);
 
   if (loading) {

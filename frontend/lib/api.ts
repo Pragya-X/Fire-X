@@ -85,6 +85,8 @@ function blobRequest(path: string): Promise<Blob> {
 // ---------------------------------------------------------------- auth
 export const login = (email: string, password: string) =>
   request<LoginResponse>("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }, false);
+export const signup = (name: string, email: string, password: string) =>
+  request<LoginResponse>("/api/v1/auth/signup", { method: "POST", body: JSON.stringify({ name, email, password }) }, false);
 export const getMe = () => request<User>("/api/v1/auth/me");
 export const changePassword = (current_password: string, new_password: string) =>
   request<{ ok: boolean }>("/api/v1/auth/change-password", {

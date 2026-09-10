@@ -50,6 +50,39 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return LoginResponse(access_token=create_access_token(user), user=UserOut.model_validate(user))
 
 
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
+@router.post("/signup", response_model=LoginResponse)
+def signup(body: SignupRequest, db: Session = Depends(get_db)):
+    """Public self-registration. New users get the 'viewer' role."""
+    email = body.email.lower().strip()
+    name = body.name.strip()
+    if not name or len(name) < 2:
+        raise HTTPException(status_code=400, detail="Name must be at least 2 characters")
+    if len(body.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=409, detail="An account with this email already exists")
+    user = User(
+        email=email,
+        name=name,
+        password_hash=hash_password(body.password),
+        role="viewer",
+        is_active=True,
+    )
+    db.add(user)
+    db.flush()
+    db.add(ActivityLog(user=email, action="signup", entity="auth", details={"role": "viewer"}))
+    db.commit()
+    db.refresh(user)
+    mailer.send_welcome_email(user.email, user.name)
+    return LoginResponse(access_token=create_access_token(user), user=UserOut.model_validate(user))
+
+
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
     return UserOut.model_validate(user)
