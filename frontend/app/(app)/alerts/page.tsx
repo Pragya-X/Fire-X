@@ -64,8 +64,8 @@ export default function AlertsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-700 tracking-tight">Alert Center</h1>
-          <p className="text-xs text-slate-400 mt-0.5">{total} active alerts · thresholds: risk ≥ 80 or high-confidence industrial fires</p>
+          <h1 className="text-xl font-bold text-secondary tracking-tight">Alert Center</h1>
+          <p className="text-xs text-muted/70 mt-0.5">{total} active alerts · thresholds: risk ≥ 80 or high-confidence industrial fires</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {["", "new", "acknowledged", "investigating", "escalated", "resolved"].map((s) => (
@@ -74,7 +74,7 @@ export default function AlertsPage() {
               onClick={() => setStatusFilter(s)}
               className={cn(
                 "rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors",
-                statusFilter === s ? "border-accent/60 bg-sky-600/20 text-slate-700" : "border-base-border text-slate-600 hover:text-slate-700"
+                statusFilter === s ? "border-accent/60 bg-sky-600/20 text-secondary" : "border-base-border text-muted hover:text-secondary"
               )}
             >
               {s === "" ? "All" : s}
@@ -96,19 +96,19 @@ export default function AlertsPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs font-bold text-sky-400">{a.code}</span>
-                  {a.status === "new" ? <Siren className="h-3.5 w-3.5 text-critical" /> : <Bell className="h-3.5 w-3.5 text-slate-400" />}
+                  {a.status === "new" ? <Siren className="h-3.5 w-3.5 text-critical" /> : <Bell className="h-3.5 w-3.5 text-muted/70" />}
                   <Badge tone={STATUS_TONE[a.status] ?? "muted"}>{a.status.toUpperCase()}</Badge>
                   <RiskBadge level={a.risk_score >= 81 ? "CRITICAL" : a.risk_score >= 61 ? "HIGH" : a.risk_score >= 41 ? "ELEVATED" : "MODERATE"} score={a.risk_score} />
-                  <span className="text-[10px] text-slate-400">{timeAgo(a.created_at)}</span>
+                  <span className="text-[10px] text-muted/70">{timeAgo(a.created_at)}</span>
                 </div>
-                <h3 className="mt-1.5 text-sm font-semibold text-slate-700">{a.title}</h3>
-                <p className="mt-0.5 text-xs text-slate-600">{a.message}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-slate-400">
+                <h3 className="mt-1.5 text-sm font-semibold text-secondary">{a.title}</h3>
+                <p className="mt-0.5 text-xs text-muted">{a.message}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted/70">
                   <span>Location: {a.location}</span>
                   <span>Confidence: {Math.round(a.confidence * 100)}%</span>
                   {a.assigned_officer && <span>Officer: {a.assigned_officer}</span>}
                 </div>
-                <p className="mt-1.5 text-[11px] text-slate-600">
+                <p className="mt-1.5 text-[11px] text-muted">
                   <AlertTriangle className="mr-1 inline h-3 w-3 text-moderate" />
                   {a.recommended_action}
                 </p>

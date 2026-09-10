@@ -13,16 +13,16 @@ const RISK_ITEMS = [
 export function MapLegend({ visible }: { visible: Record<LayerId, boolean> }) {
   return (
     <div className="absolute bottom-8 right-3 z-10 hidden w-44 rounded-lg border border-base-border bg-base-panel p-2.5 shadow-panel md:block">
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Risk legend</p>
+      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">Risk legend</p>
       <div className="flex flex-col gap-1">
         {RISK_ITEMS.map((r) => (
           <div key={r.label} className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: r.color, boxShadow: `0 0 6px ${r.color}66` }} />
-            <span className="text-[10px] text-slate-600">{r.label}</span>
+            <span className="text-[10px] text-muted">{r.label}</span>
           </div>
         ))}
       </div>
-      {visible.heatmap && <p className="mt-2 border-t border-base-border pt-1.5 text-[9px] text-slate-500">Heatmap shows density-weighted risk.</p>}
+      {visible.heatmap && <p className="mt-2 border-t border-base-border pt-1.5 text-[9px] text-muted">Heatmap shows density-weighted risk.</p>}
     </div>
   );
 }

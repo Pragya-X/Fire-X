@@ -75,8 +75,8 @@ export default function IndustrialZonesPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-700 tracking-tight">Industrial Zone Monitoring</h1>
-          <p className="text-xs text-slate-400">{zones.length} zones · persistent heat sources, fire risk, population exposure</p>
+          <h1 className="text-xl font-bold text-secondary tracking-tight">Industrial Zone Monitoring</h1>
+          <p className="text-xs text-muted/70">{zones.length} zones · persistent heat sources, fire risk, population exposure</p>
         </div>
         <Select className="w-52" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} aria-label="Filter zone type">
           <option value="">All zone types</option>
@@ -86,7 +86,7 @@ export default function IndustrialZonesPage() {
 
       <Card className="relative h-80 overflow-hidden">
         <MapView hotspots={null} focus={focus} className="h-full w-full" />
-        <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded border border-base-border bg-base-panel px-3 py-1 text-[10px] uppercase tracking-widest text-slate-600">
+        <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded border border-base-border bg-base-panel px-3 py-1 text-[10px] uppercase tracking-widest text-muted">
           {detail ? detail.zone.name : "Click a zone card to zoom"}
         </div>
       </Card>
@@ -106,24 +106,24 @@ export default function IndustrialZonesPage() {
                         {TYPE_ICON[z.zone_type] ?? <Building2 className="h-4 w-4" />}
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-slate-700">{z.name}</p>
-                        <p className="text-[10px] text-slate-400">{z.zone_type} · {z.district}, {z.state}</p>
+                        <p className="text-sm font-semibold text-secondary">{z.name}</p>
+                        <p className="text-[10px] text-muted/70">{z.zone_type} · {z.district}, {z.state}</p>
                       </div>
                     </div>
                     <RiskBadge level={z.risk_level} />
                   </div>
                   <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                     <div className="rounded border border-base-border/40 bg-base-raised/30 px-1 py-1.5">
-                      <p className="font-mono text-sm font-bold text-slate-700">{z.risk_level === "CRITICAL" ? "!" : "—"}</p>
-                      <p className="text-[9px] text-slate-400">Current risk</p>
+                      <p className="font-mono text-sm font-bold text-secondary">{z.risk_level === "CRITICAL" ? "!" : "—"}</p>
+                      <p className="text-[9px] text-muted/70">Current risk</p>
                     </div>
                     <div className="rounded border border-base-border/40 bg-base-raised/30 px-1 py-1.5">
-                      <p className="font-mono text-sm font-bold text-slate-700">{z.monitoring_level}</p>
-                      <p className="text-[9px] text-slate-400">Monitoring</p>
+                      <p className="font-mono text-sm font-bold text-secondary">{z.monitoring_level}</p>
+                      <p className="text-[9px] text-muted/70">Monitoring</p>
                     </div>
                     <div className="rounded border border-base-border/40 bg-base-raised/30 px-1 py-1.5">
-                      <p className="font-mono text-sm font-bold text-slate-700">{(z.population_exposure / 1000).toFixed(0)}k</p>
-                      <p className="text-[9px] text-slate-400">Population</p>
+                      <p className="font-mono text-sm font-bold text-secondary">{(z.population_exposure / 1000).toFixed(0)}k</p>
+                      <p className="text-[9px] text-muted/70">Population</p>
                     </div>
                   </div>
                 </CardBody>
@@ -141,7 +141,7 @@ export default function IndustrialZonesPage() {
             <div className="flex flex-wrap items-center gap-3">
               <RiskBadge level={detail.zone.risk_level} />
               <Badge tone="info">{detail.zone.monitoring_level} MONITORING</Badge>
-              <span className="text-xs text-slate-600">
+              <span className="text-xs text-muted">
                 <MapPin className="mr-1 inline h-3 w-3" />{detail.zone.latitude.toFixed(4)}, {detail.zone.longitude.toFixed(4)} · {detail.zone.district}, {detail.zone.state}
               </span>
               <Button variant="outline" size="sm" className="ml-auto" onClick={() => zoneReport(detail.zone)}>
@@ -151,39 +151,39 @@ export default function IndustrialZonesPage() {
 
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {[
-                { l: "Hotspots within 1 km", v: detail.hotspots_1km, tone: detail.hotspots_1km > 0 ? "text-critical" : "text-slate-700" },
-                { l: "Hotspots within 5 km", v: detail.hotspots_5km, tone: detail.hotspots_5km > 3 ? "text-high" : "text-slate-700" },
-                { l: "Historical detections", v: detail.historical_activity, tone: "text-slate-700" },
-                { l: "Active alerts", v: detail.alerts, tone: detail.alerts > 0 ? "text-moderate" : "text-slate-700" },
+                { l: "Hotspots within 1 km", v: detail.hotspots_1km, tone: detail.hotspots_1km > 0 ? "text-critical" : "text-secondary" },
+                { l: "Hotspots within 5 km", v: detail.hotspots_5km, tone: detail.hotspots_5km > 3 ? "text-high" : "text-secondary" },
+                { l: "Historical detections", v: detail.historical_activity, tone: "text-secondary" },
+                { l: "Active alerts", v: detail.alerts, tone: detail.alerts > 0 ? "text-moderate" : "text-secondary" },
               ].map((x) => (
                 <div key={x.l} className="rounded-md border border-base-border/50 bg-base-raised/40 px-3 py-2.5 text-center">
                   <p className={`font-mono text-xl font-bold ${x.tone}`}>{x.v}</p>
-                  <p className="text-[9px] uppercase tracking-wider text-slate-400">{x.l}</p>
+                  <p className="text-[9px] uppercase tracking-wider text-muted/70">{x.l}</p>
                 </div>
               ))}
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="rounded-md border border-base-border/50 p-3">
-                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700"><Users className="h-3.5 w-3.5 text-accent" /> Population exposure</p>
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-secondary"><Users className="h-3.5 w-3.5 text-accent" /> Population exposure</p>
                 <p className="text-lg font-bold text-slate-100">{detail.population_exposure.toLocaleString()}</p>
-                <p className="text-[10px] text-slate-400">Estimated residents within 12 km of zone centre</p>
+                <p className="text-[10px] text-muted/70">Estimated residents within 12 km of zone centre</p>
               </div>
               <div className="rounded-md border border-base-border/50 p-3">
-                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700"><Flame className="h-3.5 w-3.5 text-accent" /> Recommended monitoring</p>
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-secondary"><Flame className="h-3.5 w-3.5 text-accent" /> Recommended monitoring</p>
                 <p className="text-lg font-bold text-slate-100">{detail.recommended_monitoring}</p>
-                <p className="text-[10px] text-slate-400">Road access: {detail.road_access}</p>
+                <p className="text-[10px] text-muted/70">Road access: {detail.road_access}</p>
               </div>
             </div>
 
             {detail.hotspots_1km_list.length > 0 && (
               <div>
-                <p className="mb-2 text-xs font-semibold text-slate-700">Hotspots within 1 km (by risk)</p>
+                <p className="mb-2 text-xs font-semibold text-secondary">Hotspots within 1 km (by risk)</p>
                 <div className="max-h-52 space-y-1.5 overflow-y-auto">
                   {detail.hotspots_1km_list.map((h) => (
                     <div key={h.id} className="flex items-center justify-between rounded border border-base-border/40 bg-base-raised/30 px-2.5 py-1.5 text-[11px]">
                       <span className="font-mono font-semibold text-sky-400">{h.code}</span>
-                      <span className="text-slate-600">{h.classification}</span>
+                      <span className="text-muted">{h.classification}</span>
                       <RiskBadge level={h.risk_level} score={h.risk_score} />
                     </div>
                   ))}

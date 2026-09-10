@@ -60,8 +60,8 @@ export default function IngestionPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-700">Data Ingestion</h1>
-          <p className="text-xs text-slate-400">Provider status is reported for each operation. Real training references must be supplied through the documented reference bundle workflow.</p>
+          <h1 className="text-lg font-bold text-secondary">Data Ingestion</h1>
+          <p className="text-xs text-muted/70">Provider status is reported for each operation. Real training references must be supplied through the documented reference bundle workflow.</p>
         </div>
         <Badge tone={canIngest ? "info" : "muted"}>{canIngest ? "ANALYST ACCESS" : "VIEW ONLY"}</Badge>
       </div>
@@ -77,11 +77,11 @@ export default function IngestionPage() {
                   <div className="flex items-center gap-2">
                     <span className="rounded-md border border-base-border bg-base-raised p-2 text-accent">{a.icon}</span>
                     <div>
-                      <p className="text-sm font-semibold text-slate-700">{a.label}</p>
-                      <p className="mt-0.5 text-[10px] text-slate-400">{a.desc}</p>
+                      <p className="text-sm font-semibold text-secondary">{a.label}</p>
+                      <p className="mt-0.5 text-[10px] text-muted/70">{a.desc}</p>
                     </div>
                   </div>
-                  <Cpu className="h-3.5 w-3.5 text-slate-600" />
+                  <Cpu className="h-3.5 w-3.5 text-muted" />
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   <Button size="sm" variant={a.key === "demo" ? "default" : "outline"} onClick={a.fn} disabled={isLoading || !canIngest}>
@@ -89,7 +89,7 @@ export default function IngestionPage() {
                     {isLoading ? "Running..." : a.label}
                   </Button>
                   {res && (
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-[10px] text-muted/70">
                       {"duration_ms" in res ? `${res.duration_ms} ms` : ""}
                     </span>
                   )}
@@ -120,7 +120,7 @@ export default function IngestionPage() {
         <CardBody className="p-0">
           {activity.length === 0 ? <Skeleton className="m-4 h-32" /> : (
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-base-border/70 text-slate-400">
+              <thead className="border-b border-base-border/70 text-muted/70">
                 <tr>
                   <th className="px-4 py-2.5 font-medium">Time</th>
                   <th className="px-4 py-2.5 font-medium">User</th>
@@ -132,11 +132,11 @@ export default function IngestionPage() {
               <tbody>
                 {activity.slice(0, 25).map((a) => (
                   <tr key={a.id} className="border-b border-base-border/40">
-                    <td className="px-4 py-2 text-slate-600">{timeAgo(a.created_at)}</td>
-                    <td className="px-4 py-2 text-slate-700">{a.user}</td>
+                    <td className="px-4 py-2 text-muted">{timeAgo(a.created_at)}</td>
+                    <td className="px-4 py-2 text-secondary">{a.user}</td>
                     <td className="px-4 py-2"><span className="font-mono text-sky-400">{a.action}</span></td>
-                    <td className="px-4 py-2 text-slate-600">{a.entity}</td>
-                    <td className="hidden px-4 py-2 text-slate-400 md:table-cell">{JSON.stringify(a.details).slice(0, 80)}</td>
+                    <td className="px-4 py-2 text-muted">{a.entity}</td>
+                    <td className="hidden px-4 py-2 text-muted/70 md:table-cell">{JSON.stringify(a.details).slice(0, 80)}</td>
                   </tr>
                 ))}
               </tbody>

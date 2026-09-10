@@ -59,8 +59,8 @@ export default function AiIntelligencePage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-slate-700 tracking-tight">AI Intelligence Engine</h1>
-        <p className="text-xs text-slate-400 mt-0.5">Classification pipeline · feature engineering · explainable ML predictions</p>
+        <h1 className="text-xl font-bold text-secondary tracking-tight">AI Intelligence Engine</h1>
+        <p className="text-xs text-muted/70 mt-0.5">Classification pipeline · feature engineering · explainable ML predictions</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -73,9 +73,9 @@ export default function AiIntelligencePage() {
               <>
                 <div className="flex items-center gap-2">
                   <Badge tone={status.online ? "low" : "moderate"}>{status.online ? "ONLINE" : "BASELINE"}</Badge>
-                  <span className="text-xs text-slate-700">{status.mode}</span>
+                  <span className="text-xs text-secondary">{status.mode}</span>
                 </div>
-                <p className="mt-2 text-[11px] leading-relaxed text-slate-400">{modelNote}</p>
+                <p className="mt-2 text-[11px] leading-relaxed text-muted/70">{modelNote}</p>
               </>
             )}
           </CardBody>
@@ -96,7 +96,7 @@ export default function AiIntelligencePage() {
                 Run classification
               </Button>
             </div>
-            <p className="mt-2 text-[10px] text-slate-400">Runs the full pipeline: temporal analysis → feature engineering → ML prediction → risk scoring → explanation.</p>
+            <p className="mt-2 text-[10px] text-muted/70">Runs the full pipeline: temporal analysis → feature engineering → ML prediction → risk scoring → explanation.</p>
           </CardBody>
         </Card>
       </div>
@@ -115,32 +115,32 @@ export default function AiIntelligencePage() {
                   <ConfidenceGauge value={result.confidence} label="Classification confidence" />
                 </div>
                 <div>
-                  <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-400">Class probabilities</p>
+                  <p className="mb-2 text-[10px] uppercase tracking-wider text-muted/70">Class probabilities</p>
                   <div className="space-y-1.5">
                     {Object.entries(result.probabilities).sort((a, b) => b[1] - a[1]).map(([c, p]) => (
                       <div key={c} className="flex items-center gap-2">
-                        <span className="w-44 truncate text-[11px] text-slate-600">{c}</span>
+                        <span className="w-44 truncate text-[11px] text-muted">{c}</span>
                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-base-panel">
                           <div className="h-full rounded-full" style={{ width: `${p * 100}%`, background: CLASS_COLORS[c] || "#64748b" }} />
                         </div>
-                        <span className="w-10 text-right font-mono text-[10px] text-slate-400">{(p * 100).toFixed(1)}%</span>
+                        <span className="w-10 text-right font-mono text-[10px] text-muted/70">{(p * 100).toFixed(1)}%</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-400">{result.feature_importance_type === "global_model_importance" ? "Global model importance" : "Heuristic context weights"}</p>
+                <p className="mb-2 text-[10px] uppercase tracking-wider text-muted/70">{result.feature_importance_type === "global_model_importance" ? "Global model importance" : "Heuristic context weights"}</p>
                 <FeatureImportance importance={result.feature_importance} />
               </div>
               <div>
-                <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-400">Heuristic context explanation</p>
-                <p className="flex items-center gap-1.5 text-[11px] text-slate-600"><Sparkles className="h-3 w-3 text-accent" /> {String((result.explanation as { reasoning?: string }).reasoning ?? "No reasoning available.")}</p>
+                <p className="mb-2 text-[10px] uppercase tracking-wider text-muted/70">Heuristic context explanation</p>
+                <p className="flex items-center gap-1.5 text-[11px] text-muted"><Sparkles className="h-3 w-3 text-accent" /> {String((result.explanation as { reasoning?: string }).reasoning ?? "No reasoning available.")}</p>
                 <div className="mt-3 space-y-1">
                   {Object.entries((result.explanation as { model_derived_factors?: Record<string, string> }).model_derived_factors ?? {}).map(([k, v]) => (
                     <div key={k} className="flex justify-between rounded border border-base-border/40 bg-base-raised/30 px-2.5 py-1.5 text-[11px]">
-                      <span className="text-slate-600">{k}</span>
-                      <span className="font-semibold text-slate-700">{v}</span>
+                      <span className="text-muted">{k}</span>
+                      <span className="font-semibold text-secondary">{v}</span>
                     </div>
                   ))}
                 </div>

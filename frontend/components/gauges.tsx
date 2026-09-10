@@ -33,7 +33,7 @@ export function RiskGauge({ score, level, size = 150 }: { score: number; level: 
         <span className="font-mono text-2xl font-bold" style={{ color }}>
           {Math.round(score)}
         </span>
-        <span className="text-xs text-slate-500"> / 100</span>
+        <span className="text-xs text-muted"> / 100</span>
         <div className="text-[11px] font-semibold tracking-widest" style={{ color }}>
           {level}
         </div>
@@ -48,7 +48,7 @@ export function ConfidenceGauge({ value, label = "Confidence" }: { value: number
   return (
     <div className="w-full" role="img" aria-label={`${label} ${pct} percent`}>
       <div className="mb-1 flex items-center justify-between text-[11px]">
-        <span className="text-slate-600">{label}</span>
+        <span className="text-muted">{label}</span>
         <span className="font-mono font-semibold" style={{ color }}>
           {Math.round(pct)}%
         </span>

@@ -38,14 +38,14 @@ export function FeatureImportance({
     <div className={cn("flex flex-col gap-2", className)}>
       {entries.map(([key, value]) => (
         <div key={key} className="flex items-center gap-2">
-          <span className="w-36 shrink-0 text-[11px] text-slate-600">{LABELS[key] || key}</span>
+          <span className="w-36 shrink-0 text-[11px] text-muted">{LABELS[key] || key}</span>
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
             <div
               className="h-full rounded-full bg-sky-500/80"
               style={{ width: `${(value / max) * 100}%`, boxShadow: "0 0 6px rgba(56,189,248,0.4)" }}
             />
           </div>
-          <span className="w-12 shrink-0 text-right font-mono text-[10px] text-slate-500">{value.toFixed(3)}</span>
+          <span className="w-12 shrink-0 text-right font-mono text-[10px] text-muted">{value.toFixed(3)}</span>
         </div>
       ))}
     </div>
@@ -57,10 +57,10 @@ export function FactorList({ factors }: { factors: Record<string, string> }) {
     <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
       {Object.entries(factors).map(([k, v]) => {
         const tone =
-          v === "VERY HIGH" || v === "HIGH" ? "text-critical" : v === "MODERATE" ? "text-moderate" : v === "LOW" ? "text-low" : "text-slate-700";
+          v === "VERY HIGH" || v === "HIGH" ? "text-critical" : v === "MODERATE" ? "text-moderate" : v === "LOW" ? "text-low" : "text-secondary";
         return (
           <div key={k} className="flex items-center justify-between rounded border border-base-border/60 bg-base-raised/40 px-2.5 py-1.5">
-            <span className="text-[11px] text-slate-600">{k}</span>
+            <span className="text-[11px] text-muted">{k}</span>
             <span className={cn("text-[11px] font-semibold", tone)}>{v}</span>
           </div>
         );

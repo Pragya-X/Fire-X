@@ -61,15 +61,15 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-slate-700 tracking-tight">Analytics</h1>
-        <p className="text-xs text-slate-400">All charts are computed from live database aggregations - generated {new Date(data.generated_at).toLocaleString("en-IN")}</p>
+        <h1 className="text-xl font-bold text-secondary tracking-tight">Analytics</h1>
+        <p className="text-xs text-muted/70">All charts are computed from live database aggregations - generated {new Date(data.generated_at).toLocaleString("en-IN")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {summary.map((s) => (
           <Card key={s.label} className="px-4 py-3">
-            <div className="flex items-center gap-2 text-[11px] text-slate-400">{s.icon}{s.label}</div>
-            <p className="mt-1 font-mono text-2xl font-bold text-slate-700">{s.value}</p>
+            <div className="flex items-center gap-2 text-[11px] text-muted/70">{s.icon}{s.label}</div>
+            <p className="mt-1 font-mono text-2xl font-bold text-secondary">{s.value}</p>
           </Card>
         ))}
       </div>
@@ -171,9 +171,9 @@ export default function AnalyticsPage() {
           <div className="flex h-full flex-col justify-center gap-2 overflow-y-auto">
             {data.top_industrial_zones.map((z, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="w-6 font-mono text-xs text-slate-400">{i + 1}</span>
-                <span className="flex-1 truncate text-xs text-slate-700">{z.name}</span>
-                <span className="text-[10px] text-slate-400">{z.type}</span>
+                <span className="w-6 font-mono text-xs text-muted/70">{i + 1}</span>
+                <span className="flex-1 truncate text-xs text-secondary">{z.name}</span>
+                <span className="text-[10px] text-muted/70">{z.type}</span>
                 <span className={`rounded border px-1.5 py-0.5 text-[10px] font-semibold ${z.risk_level === "CRITICAL" ? "border-critical/40 text-critical" : z.risk_level === "HIGH" ? "border-high/40 text-high" : z.risk_level === "ELEVATED" ? "border-moderate/40 text-moderate" : "border-low/40 text-low"}`}>
                   {z.risk_level}
                 </span>
@@ -190,8 +190,8 @@ export default function AnalyticsPage() {
                 <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-base-panel">
                   <div className="h-full rounded-full bg-sky-500/70" style={{ width: `${h.persistence_score}%` }} />
                 </div>
-                <span className="w-9 text-right font-mono text-[10px] text-slate-600">{Math.round(h.persistence_score)}</span>
-                <span className="hidden w-40 truncate text-[10px] text-slate-400 sm:block">{h.classification}</span>
+                <span className="w-9 text-right font-mono text-[10px] text-muted">{Math.round(h.persistence_score)}</span>
+                <span className="hidden w-40 truncate text-[10px] text-muted/70 sm:block">{h.classification}</span>
               </div>
             ))}
           </div>

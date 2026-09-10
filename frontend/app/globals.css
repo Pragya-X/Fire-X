@@ -13,17 +13,24 @@
   color-scheme: light;
 }
 
+/* Default to dark theme on first load */
+html {
+  color-scheme: dark;
+}
+
 html.dark-theme,
 .dark-theme body {
   background-color: var(--color-base-dark, #04070d);
+  background-image: radial-gradient(circle at top, rgba(2, 132, 199, 0.05) 0%, transparent 60%),
+                    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
   color: var(--color-text-primary-dark, #e2e8f0);
 }
 .dark-theme {
   --color-base: #04070d;
   --color-base-panel: #0a101c;
-  --color-base-raised: #0f172a;
-  --color-base-border: #1e293b;
-  --color-text-primary: #e2e8f0;
+  --color-base-raised: rgba(15, 23, 42, 0.6);
+  --color-base-border: rgba(30, 41, 59, 0.7);
+  --color-text-primary: #f8fafc;
   --color-text-secondary: #cbd5e1;
   --color-text-muted: #94a3b8;
   color-scheme: dark;
@@ -103,4 +110,13 @@ body {
 }
 .maplibregl-canvas {
   outline: none;
+}
+
+/* Slide-in animation for mobile sidebar drawer */
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.animate-slideIn {
+  animation: slideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

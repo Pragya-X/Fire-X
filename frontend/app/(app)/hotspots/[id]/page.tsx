@@ -96,7 +96,7 @@ export default function HotspotIntelligencePage() {
             <RiskBadge level={data.risk_level} score={data.risk_score} />
             <Badge tone={data.source === "scenario" ? "purple" : "muted"}>{data.source.toUpperCase()}</Badge>
           </div>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-muted/70">
             <MapPin className="mr-1 inline h-3 w-3" />
             {data.latitude.toFixed(5)}, {data.longitude.toFixed(5)} · {data.state} / {data.district} · detected {fmtDt(data.acquisition_time)}
           </p>
@@ -117,8 +117,8 @@ export default function HotspotIntelligencePage() {
           { l: "Status", v: data.status },
         ].map((x) => (
           <Card key={x.l} className="px-3 py-2.5">
-            <p className="text-[9px] uppercase tracking-wider text-slate-400">{x.l}</p>
-            <p className="mt-0.5 truncate text-xs font-semibold text-slate-200">{x.v}</p>
+            <p className="text-[9px] uppercase tracking-wider text-muted/70">{x.l}</p>
+            <p className="mt-0.5 truncate text-xs font-semibold text-muted/30">{x.v}</p>
           </Card>
         ))}
       </div>
@@ -129,7 +129,7 @@ export default function HotspotIntelligencePage() {
           <CardHeader><CardTitle className="flex items-center gap-1.5"><Thermometer className="h-4 w-4 text-accent" /> Risk assessment</CardTitle></CardHeader>
           <CardBody className="flex flex-col items-center">
             <RiskGauge score={data.risk_score} level={data.risk_level} size={170} />
-            <p className="mt-3 text-center text-xs text-slate-400">
+            <p className="mt-3 text-center text-xs text-muted/70">
               {data.risk_score >= 81 ? "Immediate field verification recommended." : data.risk_score >= 61 ? "Priority inspection recommended." : data.risk_score >= 41 ? "Enhanced monitoring recommended." : data.risk_score >= 21 ? "Continue monitoring." : "No immediate action required."}
             </p>
             <div className="mt-4 w-full">
@@ -157,13 +157,13 @@ export default function HotspotIntelligencePage() {
                   { l: "Nearest pipeline", v: f.nearest_pipeline_distance },
                 ].map((x) => (
                   <div key={x.l} className="flex items-center justify-between rounded border border-base-border/40 bg-base-raised/30 px-2.5 py-1.5">
-                    <span className="text-[11px] text-slate-400">{x.l}</span>
-                    <span className="font-mono text-[11px] font-semibold text-slate-200">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
+                    <span className="text-[11px] text-muted/70">{x.l}</span>
+                    <span className="font-mono text-[11px] font-semibold text-muted/30">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400">Spatial features not computed.</p>
+              <p className="text-xs text-muted/70">Spatial features not computed.</p>
             )}
           </CardBody>
         </Card>
@@ -176,12 +176,12 @@ export default function HotspotIntelligencePage() {
               <Badge tone={data.temporal_pattern === "persistent" ? "info" : data.temporal_pattern === "sudden" ? "critical" : data.temporal_pattern === "recurring" ? "moderate" : "muted"}>
                 {data.temporal_pattern.toUpperCase()}
               </Badge>
-              <span className="text-[11px] text-slate-400">{data.history.length} prior detections</span>
+              <span className="text-[11px] text-muted/70">{data.history.length} prior detections</span>
             </div>
-            <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-400">14-day detection timeline</p>
+            <p className="mb-2 text-[10px] uppercase tracking-wider text-muted/70">14-day detection timeline</p>
             <DetectionTimeline days={temporalDays} />
             <div className="mt-4">
-              <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-400">Detection history</p>
+              <p className="mb-2 text-[10px] uppercase tracking-wider text-muted/70">Detection history</p>
               <HistoryTimeline history={data.history} />
             </div>
           </CardBody>
@@ -197,35 +197,35 @@ export default function HotspotIntelligencePage() {
         <CardBody>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div>
-              <p className="mb-2 text-xs font-semibold text-slate-300">Model-derived factors</p>
+              <p className="mb-2 text-xs font-semibold text-muted/50">Model-derived factors</p>
               <FactorList factors={data.explanation?.model_derived_factors ?? {}} />
               {data.explanation?.probability_gap_pct !== undefined && (
-                <p className="mt-2 flex items-center gap-1.5 text-[10px] text-slate-400">
+                <p className="mt-2 flex items-center gap-1.5 text-[10px] text-muted/70">
                   <Info className="h-3 w-3" />
                   Probability gap vs runner-up: {data.explanation.probability_gap_pct}% ({data.explanation.runner_up ?? "none"})
                 </p>
               )}
             </div>
             <div>
-              <p className="mb-2 text-xs font-semibold text-slate-300">Feature importance</p>
+              <p className="mb-2 text-xs font-semibold text-muted/50">Feature importance</p>
               <FeatureImportance importance={importance} />
             </div>
             <div>
-              <p className="mb-2 text-xs font-semibold text-slate-300">Contextual factors (rule-based)</p>
+              <p className="mb-2 text-xs font-semibold text-muted/50">Contextual factors (rule-based)</p>
               <ul className="space-y-1">
-                {contextual.length === 0 && <li className="text-xs text-slate-400">No contextual factors recorded.</li>}
+                {contextual.length === 0 && <li className="text-xs text-muted/70">No contextual factors recorded.</li>}
                 {contextual.map((c, i) => (
-                  <li key={i} className="flex items-start gap-2 text-[11px] text-slate-400">
+                  <li key={i} className="flex items-start gap-2 text-[11px] text-muted/70">
                     <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-accent" />{c}
                   </li>
                 ))}
               </ul>
               {reasoning && (
                 <div className="mt-3 rounded-md border border-accent/20 bg-sky-600/5 p-3">
-                  <p className="text-[11px] leading-relaxed text-slate-300">{reasoning}</p>
+                  <p className="text-[11px] leading-relaxed text-muted/50">{reasoning}</p>
                 </div>
               )}
-              <p className="mt-3 text-[9px] text-slate-600">
+              <p className="mt-3 text-[9px] text-muted">
                 Model-derived factors come from the trained classifier; contextual factors are rule-based heuristics and are not model explanations.
               </p>
             </div>

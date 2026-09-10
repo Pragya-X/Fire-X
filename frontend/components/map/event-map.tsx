@@ -17,7 +17,7 @@ export default function EventMap({ events, onSelect }: { events: ThermalEvent[];
     try {
       view = new maplibregl.Map({ container: container.current, center: [79,22], zoom: 4,
         style: { version: 8, sources: { base: { type: "raster", tileSize: 256,
-          tiles: [process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4"], attribution: "© CARTO © OpenStreetMap" } },
+          tiles: [process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4"], attribution: "© CARTO © OpenStreetMap" } },
           layers: [{ id: "base", type: "raster", source: "base" }] } });
     } catch { setError("Map unavailable. Use the event table below."); return; }
     map.current = view;

@@ -48,10 +48,10 @@ export function HotspotDetailPanel({ hotspotId, onClose }: { hotspotId: number |
     <aside className="flex w-full flex-col overflow-hidden rounded-lg border border-base-border bg-base-panel shadow-panel lg:w-[360px] lg:max-h-full">
       <div className="flex items-center justify-between border-b border-base-border/70 px-4 py-3">
         <div>
-          <p className="font-mono text-sm font-bold text-slate-900">{data?.code ?? "Hotspot"}</p>
-          <p className="text-[10px] text-slate-500">{data ? `${data.state} / ${data.district}` : "Loading..."}</p>
+          <p className="font-mono text-sm font-bold text-primary">{data?.code ?? "Hotspot"}</p>
+          <p className="text-[10px] text-muted">{data ? `${data.state} / ${data.district}` : "Loading..."}</p>
         </div>
-        <button onClick={onClose} className="rounded p-1 text-slate-600 hover:bg-slate-100 hover:text-slate-900" aria-label="Close panel">
+        <button onClick={onClose} className="rounded p-1 text-muted hover:bg-base-raised hover:text-primary" aria-label="Close panel">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -77,7 +77,7 @@ export function HotspotDetailPanel({ hotspotId, onClose }: { hotspotId: number |
           </div>
 
           <div>
-            <p className="mb-1 text-[10px] uppercase tracking-wider text-slate-500">Thermal signature</p>
+            <p className="mb-1 text-[10px] uppercase tracking-wider text-muted">Thermal signature</p>
             <div className="grid grid-cols-3 gap-2 text-center">
               {[
                 { l: "Brightness", v: `${fmt(data.brightness)} K` },
@@ -85,8 +85,8 @@ export function HotspotDetailPanel({ hotspotId, onClose }: { hotspotId: number |
                 { l: "Confidence", v: `${Math.round(data.confidence * 100)}%` },
               ].map((x) => (
                 <div key={x.l} className="rounded-md border border-base-border/50 bg-base-raised/40 px-2 py-2">
-                  <p className="font-mono text-xs font-semibold text-slate-900">{x.v}</p>
-                  <p className="text-[9px] text-slate-500">{x.l}</p>
+                  <p className="font-mono text-xs font-semibold text-primary">{x.v}</p>
+                  <p className="text-[9px] text-muted">{x.l}</p>
                 </div>
               ))}
             </div>
@@ -94,7 +94,7 @@ export function HotspotDetailPanel({ hotspotId, onClose }: { hotspotId: number |
 
           {f && (
             <div>
-              <p className="mb-1.5 text-[10px] uppercase tracking-wider text-slate-500">Spatial context</p>
+              <p className="mb-1.5 text-[10px] uppercase tracking-wider text-muted">Spatial context</p>
               <div className="space-y-1">
                 {[
                   { l: "Nearest refinery", v: f.nearest_refinery_distance },
@@ -105,8 +105,8 @@ export function HotspotDetailPanel({ hotspotId, onClose }: { hotspotId: number |
                   { l: "Nearest pipeline", v: f.nearest_pipeline_distance },
                 ].map((x) => (
                   <div key={x.l} className="flex items-center justify-between rounded border border-base-border/40 bg-base-raised/30 px-2.5 py-1.5">
-                    <span className="text-[11px] text-slate-600">{x.l}</span>
-                    <span className="font-mono text-[11px] font-semibold text-slate-900">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
+                    <span className="text-[11px] text-muted">{x.l}</span>
+                    <span className="font-mono text-[11px] font-semibold text-primary">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
                   </div>
                 ))}
               </div>

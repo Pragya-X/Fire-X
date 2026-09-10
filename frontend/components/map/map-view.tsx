@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-const LIGHT_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
+const DARK_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
 const SATELLITE_TILES =
   process.env.NEXT_PUBLIC_SATELLITE_TILE_URL ||
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -127,7 +127,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
   const selectedRef = useRef(selectedId);
   selectedRef.current = selectedId;
 
-  const [basemap, setBasemap] = useState<"light" | "satellite">("light");
+  const [basemap, setBasemap] = useState<"dark" | "satellite">("dark");
   const [visible, setVisible] = useState<Record<LayerId, boolean>>(DEFAULT_VISIBLE);
   const [ready, setReady] = useState(false);
   const [infra, setInfra] = useState<GeoJson | null>(null);
@@ -152,7 +152,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
         version: 8,
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: {
-          basemap: { type: "raster", tiles: [LIGHT_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
+          basemap: { type: "raster", tiles: [DARK_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
           satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© Esri" },
         },
         layers: [
@@ -218,7 +218,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
-    map.setLayoutProperty("basemap-layer", "visibility", basemap === "light" ? "visible" : "none");
+    map.setLayoutProperty("basemap-layer", "visibility", basemap === "dark" ? "visible" : "none");
     map.setLayoutProperty("satellite-layer", "visibility", basemap === "satellite" ? "visible" : "none");
   }, [basemap, ready]);
 

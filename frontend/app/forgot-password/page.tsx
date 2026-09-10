@@ -34,19 +34,19 @@ export default function ForgotPasswordPage() {
             <Flame className="h-7 w-7 text-accent" strokeWidth={2.2} />
           </div>
           <h1 className="text-2xl font-bold tracking-widest text-white">FIRE-X</h1>
-          <p className="mt-1 text-xs uppercase tracking-[0.25em] text-slate-400">Password recovery</p>
+          <p className="mt-1 text-xs uppercase tracking-[0.25em] text-muted/70">Password recovery</p>
         </div>
 
         <div className="rounded-lg border border-base-border bg-base-panel p-6 shadow-panel">
           {sent ? (
             <div className="py-4 text-center">
               <MailCheck className="mx-auto mb-3 h-10 w-10 text-low" />
-              <p className="text-sm font-medium text-slate-200">Reset link sent</p>
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-                If an account exists for <span className="font-mono text-slate-300">{email}</span>, a password-reset link is on its
+              <p className="text-sm font-medium text-muted/30">Reset link sent</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted/70">
+                If an account exists for <span className="font-mono text-muted/50">{email}</span>, a password-reset link is on its
                 way. It expires in 30 minutes.
               </p>
-              <p className="mt-2 text-[10px] text-slate-600">
+              <p className="mt-2 text-[10px] text-muted">
                 No SMTP configured? The email is written to the backend mail outbox instead - check the server console.
               </p>
               <Link href="/login" className="mt-4 inline-block text-xs text-accent hover:underline">
@@ -55,10 +55,10 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <form onSubmit={submit}>
-              <p className="mb-4 text-xs leading-relaxed text-slate-400">
+              <p className="mb-4 text-xs leading-relaxed text-muted/70">
                 Enter the email address linked to your FIRE-X account and we will send a one-time password-reset link.
               </p>
-              <label className="mb-1.5 block text-xs font-medium text-slate-400" htmlFor="email">
+              <label className="mb-1.5 block text-xs font-medium text-muted/70" htmlFor="email">
                 Email
               </label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required />
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
           )}
         </div>
 
-        <Link href="/login" className="mt-4 flex items-center justify-center gap-1 text-xs text-slate-400 hover:text-slate-300">
+        <Link href="/login" className="mt-4 flex items-center justify-center gap-1 text-xs text-muted/70 hover:text-muted/50">
           <ArrowLeft className="h-3 w-3" /> Back to login
         </Link>
       </div>

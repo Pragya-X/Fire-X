@@ -48,7 +48,7 @@ export function StatCard({
     <Card className={cn("border-t-2 px-4 py-3", toneBorder[tone])}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-slate-500">{label}</p>
+          <p className="text-[11px] uppercase tracking-wider text-muted">{label}</p>
           <p className={cn("mt-1 font-mono text-2xl font-bold", toneText[tone])}>{value}</p>
           <div className="mt-1 flex items-center gap-2">
             {change !== undefined && (
@@ -57,7 +57,7 @@ export function StatCard({
                 {Math.abs(change).toFixed(1)}%
               </span>
             )}
-            {sub && <span className="text-[10px] text-slate-500">{sub}</span>}
+            {sub && <span className="text-[10px] text-muted">{sub}</span>}
             {spark && <TrendSparkline values={spark} />}
           </div>
         </div>

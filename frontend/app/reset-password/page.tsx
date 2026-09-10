@@ -46,14 +46,14 @@ function ResetPasswordInner() {
             <Flame className="h-7 w-7 text-accent" strokeWidth={2.2} />
           </div>
           <h1 className="text-2xl font-bold tracking-widest text-white">FIRE-X</h1>
-          <p className="mt-1 text-xs uppercase tracking-[0.25em] text-slate-400">Choose a new password</p>
+          <p className="mt-1 text-xs uppercase tracking-[0.25em] text-muted/70">Choose a new password</p>
         </div>
 
         <div className="rounded-lg border border-base-border bg-base-panel p-6 shadow-panel">
           {!token ? (
             <div className="py-4 text-center">
-              <p className="text-sm text-slate-300">This reset link is missing its token.</p>
-              <p className="mt-1 text-xs text-slate-400">Use the link from the password-reset email, or request a new one.</p>
+              <p className="text-sm text-muted/50">This reset link is missing its token.</p>
+              <p className="mt-1 text-xs text-muted/70">Use the link from the password-reset email, or request a new one.</p>
               <Link href="/forgot-password" className="mt-4 inline-block text-xs text-accent hover:underline">
                 Request a new link
               </Link>
@@ -61,20 +61,20 @@ function ResetPasswordInner() {
           ) : done ? (
             <div className="py-4 text-center">
               <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-low" />
-              <p className="text-sm font-medium text-slate-200">Password updated</p>
-              <p className="mt-1.5 text-xs text-slate-400">Sign in with your new password.</p>
+              <p className="text-sm font-medium text-muted/30">Password updated</p>
+              <p className="mt-1.5 text-xs text-muted/70">Sign in with your new password.</p>
               <Link href="/login" className="mt-4 inline-block text-xs text-accent hover:underline">
                 Go to login
               </Link>
             </div>
           ) : (
             <form onSubmit={submit}>
-              <label className="mb-1.5 block text-xs font-medium text-slate-400" htmlFor="password">
+              <label className="mb-1.5 block text-xs font-medium text-muted/70" htmlFor="password">
                 New password
               </label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" required />
 
-              <label className="mb-1.5 mt-4 block text-xs font-medium text-slate-400" htmlFor="confirm">
+              <label className="mb-1.5 mt-4 block text-xs font-medium text-muted/70" htmlFor="confirm">
                 Confirm new password
               </label>
               <Input id="confirm" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required />
@@ -99,7 +99,7 @@ function ResetPasswordInner() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-slate-400" /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted/70" /></div>}>
       <ResetPasswordInner />
     </Suspense>
   );

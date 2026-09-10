@@ -102,6 +102,25 @@ export const resetPassword = (token: string, new_password: string) =>
     body: JSON.stringify({ token, new_password }),
   }, false);
 
+// ---------------------------------------------------------------- admin: user management
+export interface AdminUser {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  is_active?: boolean;
+  created_at?: string;
+}
+export const adminListUsers = () => request<AdminUser[]>("/api/v1/auth/users");
+export const adminCreateUser = (data: { name: string; email: string; password: string; role: string }) =>
+  request<AdminUser>("/api/v1/auth/users", { method: "POST", body: JSON.stringify(data) });
+export const adminUpdateUser = (id: number, data: { role?: string; is_active?: boolean; name?: string }) =>
+  request<AdminUser>(`/api/v1/auth/users/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+export const adminDeleteUser = (id: number) =>
+  request<{ ok: boolean }>(`/api/v1/auth/users/${id}`, { method: "DELETE" });
+
+
+
 // ---------------------------------------------------------------- hotspots
 export interface HotspotQuery {
   page?: number;

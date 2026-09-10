@@ -97,10 +97,10 @@ export default function HistoricalPage() {
     { key: "code", header: "ID", render: (h) => <span className="font-mono font-semibold text-sky-400">{h.code}</span> },
     { key: "classification", header: "Classification", render: (h) => <ClassificationBadge classification={h.classification} confidence={h.classification_confidence} /> },
     { key: "risk", header: "Risk", render: (h) => <RiskBadge level={h.risk_level} score={h.risk_score} /> },
-    { key: "acquisition_time", header: "Detected", render: (h) => <span className="text-slate-600">{fmtDt(h.acquisition_time)}</span> },
+    { key: "acquisition_time", header: "Detected", render: (h) => <span className="text-muted">{fmtDt(h.acquisition_time)}</span> },
     { key: "state", header: "State", render: (h) => <span>{h.state}</span> },
     { key: "district", header: "District", render: (h) => <span>{h.district}</span> },
-    { key: "temporal_pattern", header: "Pattern", render: (h) => <span className="uppercase text-slate-600">{h.temporal_pattern}</span> },
+    { key: "temporal_pattern", header: "Pattern", render: (h) => <span className="uppercase text-muted">{h.temporal_pattern}</span> },
     { key: "persistence_score", header: "Persistence", render: (h) => <span className="font-mono">{Math.round(h.persistence_score)}</span> },
   ];
 
@@ -108,8 +108,8 @@ export default function HistoricalPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-700 tracking-tight">Historical Records</h1>
-          <p className="text-xs text-slate-400">14-day detection archive · map playback · recurring hotspot analysis</p>
+          <h1 className="text-xl font-bold text-secondary tracking-tight">Historical Records</h1>
+          <p className="text-xs text-muted/70">14-day detection archive · map playback · recurring hotspot analysis</p>
         </div>
         <Tabs tabs={[{ id: "records", label: "Records" }, { id: "playback", label: "Map playback" }]} active={tab} onChange={setTab} />
       </div>
@@ -151,7 +151,7 @@ export default function HistoricalPage() {
               {frames[frameIdx] ? `${frames[frameIdx].label} · ${frames[frameIdx].count} detections` : "Loading..."}
             </CardTitle>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-400">Day {frameIdx + 1} / {frames.length}</span>
+              <span className="text-[10px] text-muted/70">Day {frameIdx + 1} / {frames.length}</span>
               <Button variant="outline" size="sm" onClick={() => setPlaying(!playing)}>
                 {playing ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                 {playing ? "Pause" : "Play"}
@@ -181,12 +181,12 @@ export default function HistoricalPage() {
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-1.5"><History className="h-4 w-4 text-accent" /> Recurring hotspots</CardTitle></CardHeader>
           <CardBody>
-            <p className="mb-3 text-[11px] text-slate-400">Locations with repeated detections - candidates for persistent industrial heat sources.</p>
+            <p className="mb-3 text-[11px] text-muted/70">Locations with repeated detections - candidates for persistent industrial heat sources.</p>
             <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
               {rows.filter((h) => ["recurring", "persistent"].includes(h.temporal_pattern)).slice(0, 10).map((h) => (
                 <button key={h.id} onClick={() => router.push(`/hotspots/${h.id}`)} className="flex items-center justify-between rounded border border-base-border/40 bg-base-raised/30 px-3 py-2 text-left hover:border-accent/50">
                   <span className="font-mono text-xs text-sky-400">{h.code}</span>
-                  <span className="text-[10px] text-slate-600">{h.temporal_pattern} · {Math.round(h.persistence_score)} persistence</span>
+                  <span className="text-[10px] text-muted">{h.temporal_pattern} · {Math.round(h.persistence_score)} persistence</span>
                   <RiskBadge level={h.risk_level} score={h.risk_score} />
                 </button>
               ))}

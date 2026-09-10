@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CalendarDays, KeyRound, Loader2, Lock, Mail, Shield, UserRound } from "lucide-react";
 import { changePassword, getActivity } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import { Badge, Button, Card, CardBody, CardHeader, CardTitle, ErrorState, Input, Skeleton, useToast } from "@/components/ui/primitives";
+import { Badge, Button, Card, CardBody, CardHeader, CardTitle, Input, Skeleton, useToast } from "@/components/ui/primitives";
 import type { ActivityItem } from "@/lib/types";
 import { timeAgo } from "@/lib/utils";
 
@@ -74,8 +74,8 @@ export default function ProfilePage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-700">Profile</h1>
-        <p className="text-xs text-slate-400">Account details, security and recent activity</p>
+        <h1 className="text-lg font-bold text-secondary">Profile</h1>
+        <p className="text-xs text-muted/70">Account details, security and recent activity</p>
       </div>
 
       <Card>
@@ -85,8 +85,8 @@ export default function ProfilePage() {
               {initials}
             </span>
             <div className="min-w-0">
-              <p className="text-base font-semibold text-slate-700">{user.name}</p>
-              <p className="flex items-center gap-1.5 text-xs text-slate-600">
+              <p className="text-base font-semibold text-secondary">{user.name}</p>
+              <p className="flex items-center gap-1.5 text-xs text-muted">
                 <Mail className="h-3 w-3" /> {user.email}
               </p>
             </div>
@@ -95,7 +95,7 @@ export default function ProfilePage() {
                 <Shield className="h-3 w-3" /> {user.role.toUpperCase()}
               </Badge>
               {user.created_at && (
-                <span className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                <span className="flex items-center gap-1.5 text-[11px] text-muted/70">
                   <CalendarDays className="h-3.5 w-3.5" /> Member since {new Date(user.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
                 </span>
               )}
@@ -113,22 +113,22 @@ export default function ProfilePage() {
           </CardHeader>
           <CardBody className="space-y-2.5 text-sm">
             <div className="flex items-center justify-between border-b border-base-border/40 pb-2">
-              <span className="text-xs text-slate-400">Name</span>
-              <span className="text-slate-700">{user.name}</span>
+              <span className="text-xs text-muted/70">Name</span>
+              <span className="text-secondary">{user.name}</span>
             </div>
             <div className="flex items-center justify-between border-b border-base-border/40 pb-2">
-              <span className="text-xs text-slate-400">Email</span>
-              <span className="font-mono text-xs text-slate-700">{user.email}</span>
+              <span className="text-xs text-muted/70">Email</span>
+              <span className="font-mono text-xs text-secondary">{user.email}</span>
             </div>
             <div className="flex items-center justify-between border-b border-base-border/40 pb-2">
-              <span className="text-xs text-slate-400">Role</span>
-              <span className="text-xs text-slate-700">{user.role}</span>
+              <span className="text-xs text-muted/70">Role</span>
+              <span className="text-xs text-secondary">{user.role}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Account ID</span>
-              <span className="font-mono text-xs text-slate-700">#{user.id}</span>
+              <span className="text-xs text-muted/70">Account ID</span>
+              <span className="font-mono text-xs text-secondary">#{user.id}</span>
             </div>
-            <p className="pt-1 text-[10px] text-slate-400">
+            <p className="pt-1 text-[10px] text-muted/70">
               Permissions: viewer = view · field = update alerts · analyst = analyze/ingest · admin = everything.
             </p>
           </CardBody>
@@ -143,18 +143,15 @@ export default function ProfilePage() {
           <CardBody>
             <form onSubmit={submitPassword} className="space-y-3">
               <label className="block">
-                <span className="mb-1 block text-xs text-slate-600">Current password</span>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-                  <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="pl-9" required autoComplete="current-password" />
-                </div>
+                <span className="mb-1 block text-xs text-muted">Current password</span>
+                  <Input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs text-slate-600">New password</span>
+                <span className="mb-1 block text-xs text-muted">New password</span>
                 <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required autoComplete="new-password" />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs text-slate-600">Confirm new password</span>
+                <span className="mb-1 block text-xs text-muted">Confirm new password</span>
                 <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
               </label>
               <Button type="submit" disabled={changing}>
@@ -169,23 +166,28 @@ export default function ProfilePage() {
       <Card>
         <CardHeader>
           <CardTitle>Recent activity</CardTitle>
-          <span className="text-[10px] uppercase tracking-wider text-slate-600">audit log</span>
+          <span className="text-[10px] uppercase tracking-wider text-muted">audit log</span>
         </CardHeader>
         <CardBody>
           {loadingActivity && <Skeleton className="h-24" />}
-          {activityError && <ErrorState message={`Activity log unavailable: ${activityError}`} onRetry={loadActivity} />}
+          {activityError && !loadingActivity && (
+            <div className="flex flex-col items-center gap-2 py-8">
+              <p className="text-xs text-muted/60">No recent activity to display.</p>
+              <button onClick={loadActivity} className="text-[11px] text-accent hover:underline">Refresh</button>
+            </div>
+          )}
           {!loadingActivity && !activityError && activity.length === 0 && (
-            <p className="py-6 text-center text-xs text-slate-400">No recorded activity yet.</p>
+            <p className="py-6 text-center text-xs text-muted/70">No recorded activity yet.</p>
           )}
           <ul className="divide-y divide-base-border/50">
             {activity.slice(0, 20).map((a) => (
               <li key={a.id} className="flex items-center gap-3 py-2">
-                <span className="font-mono text-[10px] text-slate-600">{timeAgo(a.created_at)}</span>
-                <span className="rounded border border-base-border/60 bg-base-raised/50 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">
+                <span className="font-mono text-[10px] text-muted">{timeAgo(a.created_at)}</span>
+                <span className="rounded border border-base-border/60 bg-base-raised/50 px-1.5 py-0.5 text-[10px] font-medium text-secondary">
                   {a.action.replace(/_/g, " ")}
                 </span>
-                <span className="text-[11px] text-slate-600">{a.entity}</span>
-                <span className="ml-auto font-mono text-[10px] text-slate-400">{a.user}</span>
+                <span className="text-[11px] text-muted">{a.entity}</span>
+                <span className="ml-auto font-mono text-[10px] text-muted/70">{a.user}</span>
               </li>
             ))}
           </ul>

@@ -7,8 +7,8 @@ import type { ThermalEvent, EventDetail, EventAnnotation } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 const EventMap = dynamic(() => import("@/components/map/event-map"), { ssr: false });
 const box = "rounded-lg border border-base-border bg-base-raised p-4";
-const input = "rounded border border-base-border bg-white px-2 py-1 text-sm text-slate-700";
-const button = "rounded border border-slate-600 px-3 py-1.5 text-sm hover:bg-base-panel disabled:opacity-40";
+const input = "rounded border border-base-border bg-base px-2 py-1 text-sm text-secondary";
+const button = "rounded border border-base-border px-3 py-1.5 text-sm hover:bg-base-panel disabled:opacity-40";
 const emptyForm = { label: "Unknown", confidence: "", quality: "C" as "A" | "B" | "C", source: "", evidence: "", notes: "" };
 function value(v: unknown) { return v === null || v === undefined ? "Unavailable" : typeof v === "number" ? v.toFixed(3) : String(v); }
 function download(name: string, payload: unknown) {
@@ -73,11 +73,11 @@ export default function EventWorkspace() {
       setDetail(await getThermalEvent(detail.event_id)); setMessage("Annotation revision saved.");
     } catch (e) { setError(e instanceof Error ? e.message : "Annotation failed"); } finally { setSaving(false); }
   }
-  return <div className="space-y-4 text-slate-700">
-    <div><h1 className="text-xl font-semibold">Event evidence workspace</h1><p className="text-sm text-slate-400">Review imported thermal observations and their supporting evidence.</p></div>
+  return <div className="space-y-4 text-secondary">
+    <div><h1 className="text-xl font-semibold">Event evidence workspace</h1><p className="text-sm text-muted/70">Review imported thermal observations and their supporting evidence.</p></div>
     {error && <p role="alert" className="rounded border border-red-300 p-3 text-red-600">{error}</p>}
     {message && <p role="status" className="text-sky-700">{message}</p>}
-    <div className={box}><strong>Model: {status?.model_mode || "Unavailable"} · Training: {status?.training_ready ? "Ready" : "Blocked"}</strong><p className="mt-1 text-sm text-slate-400">{status?.reason || "Checking event model status…"}</p></div>
+    <div className={box}><strong>Model: {status?.model_mode || "Unavailable"} · Training: {status?.training_ready ? "Ready" : "Blocked"}</strong><p className="mt-1 text-sm text-muted/70">{status?.reason || "Checking event model status…"}</p></div>
     <form className={`${box} flex flex-wrap items-end gap-3`} onSubmit={e => { e.preventDefault(); void load(); }}>
       <label className="grid gap-1 text-xs">From (UTC)<input className={input} type="date" value={from} onChange={e => setFrom(e.target.value)} /></label>
       <label className="grid gap-1 text-xs">Through (UTC)<input className={input} type="date" value={to} onChange={e => setTo(e.target.value)} /></label>
@@ -100,12 +100,12 @@ export default function EventWorkspace() {
         <p className="text-sm">Historical mean FRP: {value(detail.intelligence?.anomaly.historical_mean_mw)} MW · Anomaly z-score: {value(detail.intelligence?.anomaly.score)} · Recurrence: {value(detail.intelligence?.persistence.observed_recurrence)}</p>
         <details className="mt-3 text-xs"><summary>Source provenance and full evidence</summary><pre className="mt-2 overflow-auto">{JSON.stringify({provenance:detail.provenance,features:detail.features,intelligence:detail.intelligence},null,2)}</pre></details>
       </section>
-      <section className={box}><h2 className="font-semibold">Observed FRP timeline</h2><p className="text-xs text-slate-400">Event member detections, up to 1,000. Historical baseline is shown above.</p><div className="h-52"><ResponsiveContainer><LineChart data={detail.observations}><XAxis dataKey="acquisition_time" hide /><YAxis /><Tooltip /><Line type="linear" dataKey="frp" stroke="#38bdf8" connectNulls={false} isAnimationActive={false} /></LineChart></ResponsiveContainer></div>
+      <section className={box}><h2 className="font-semibold">Observed FRP timeline</h2><p className="text-xs text-muted/70">Event member detections, up to 1,000. Historical baseline is shown above.</p><div className="h-52"><ResponsiveContainer><LineChart data={detail.observations}><XAxis dataKey="acquisition_time" hide /><YAxis /><Tooltip /><Line type="linear" dataKey="frp" stroke="#38bdf8" connectNulls={false} isAnimationActive={false} /></LineChart></ResponsiveContainer></div>
         {detail.facility_id && <button className={button} onClick={() => getEventFacility(detail.facility_id!).then(r => setFacility(r.events)).catch(e => setError(e.message))}>Load nearest facility history</button>}
         {facility && <div className="mt-2 text-xs"><p>Nearest-reference association does not establish cause. Up to 1,000 events.</p>{facility.map(e => <button key={e.event_id} className="mr-3 underline" onClick={() => setSelection(e.event_id)}>{e.start_time} · {e.event_id}</button>)}</div>}
       </section>
       <section className={box}><h2 className="font-semibold">Compare event evidence</h2><select aria-label="Comparison event" className={`${input} my-2 max-w-full`} value={comparison} onChange={e => setComparison(e.target.value)}><option value="">Select another event</option>{events.filter(e => e.event_id!==detail.event_id).map(e => <option key={e.event_id}>{e.event_id}</option>)}</select>{other && <table className="w-full text-left text-sm"><thead><tr><th>Feature</th><th>Selected</th><th>Comparison</th></tr></thead><tbody>{["mean_frp","detection_count","active_days_90d","dist_nearest_industrial_km"].map(f => <tr key={f}><td>{f}</td><td>{value(detail.features[f])}</td><td>{value(other.features[f])}</td></tr>)}</tbody></table>}</section>
-      <section className={box}><h2 className="font-semibold">Annotation · revision {last?.revision || 0} · {last?.annotation.review_status || "Unlabeled"}</h2><p className="mb-3 text-xs text-slate-400">Approval requires a different analyst, evidence, confidence and review time. Only approved A/B labels with confidence ≥0.8 can be eligible; Unknown is excluded.</p>
+      <section className={box}><h2 className="font-semibold">Annotation · revision {last?.revision || 0} · {last?.annotation.review_status || "Unlabeled"}</h2><p className="mb-3 text-xs text-muted/70">Approval requires a different analyst, evidence, confidence and review time. Only approved A/B labels with confidence ≥0.8 can be eligible; Unknown is excluded.</p>
         <fieldset disabled={!canAnnotate || saving} className="grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1 text-xs">Class<select className={input} value={form.label} onChange={e => setForm({...form,label:e.target.value})}>{status?.classes.map(c => <option key={c}>{c}</option>)}</select></label>
           <label className="grid gap-1 text-xs">Annotation confidence (0–1)<input className={input} type="number" min={0} max={1} step={.05} value={form.confidence} onChange={e => setForm({...form,confidence:e.target.value})} /></label>

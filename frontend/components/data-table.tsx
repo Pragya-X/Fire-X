@@ -46,9 +46,9 @@ export function DataTable<T>({
           <thead className="border-b border-base-border/70 bg-base-raised/60">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} className={cn("px-3 py-2.5 font-medium text-slate-600", c.className, c.hideOnMobile && "hidden lg:table-cell")}>
+                <th key={c.key} className={cn("px-3 py-2.5 font-medium text-muted", c.className, c.hideOnMobile && "hidden lg:table-cell")}>
                   <button
-                    className={cn("inline-flex items-center gap-1 hover:text-slate-900", c.sortable && "cursor-pointer")}
+                    className={cn("inline-flex items-center gap-1 hover:text-primary", c.sortable && "cursor-pointer")}
                     onClick={() => c.sortable && onSort?.(c.key)}
                     disabled={!c.sortable}
                   >
@@ -74,7 +74,7 @@ export function DataTable<T>({
               ))
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-3 py-10 text-center text-slate-500">
+                <td colSpan={columns.length} className="px-3 py-10 text-center text-muted">
                   No records match the current filters.
                 </td>
               </tr>
@@ -84,7 +84,7 @@ export function DataTable<T>({
                   key={i}
                   onClick={() => onRowClick?.(row)}
                   className={cn(
-                    "border-b border-base-border/40 transition-colors hover:bg-slate-50",
+                    "border-b border-base-border/40 transition-colors hover:bg-base-panel",
                     onRowClick && "cursor-pointer"
                   )}
                 >
@@ -99,7 +99,7 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+      <div className="mt-3 flex items-center justify-between text-xs text-muted">
         <span>
           {total.toLocaleString()} records · page {page} / {pages}
         </span>

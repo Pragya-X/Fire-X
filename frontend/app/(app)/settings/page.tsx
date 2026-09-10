@@ -31,13 +31,13 @@ export default function SettingsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-700">Settings</h1>
-        <p className="text-xs text-slate-600">Manage your account and check configured data sources.</p>
+        <h1 className="text-lg font-bold text-secondary">Settings</h1>
+        <p className="text-xs text-muted">Manage your account and check configured data sources.</p>
       </div>
 
       <Card>
         <CardHeader><CardTitle className="flex items-center gap-2"><UserRound className="h-4 w-4" /> Account</CardTitle></CardHeader>
-        <CardBody className="space-y-2 text-sm text-slate-700">
+        <CardBody className="space-y-2 text-sm text-secondary">
           <p>{user?.name} · {user?.role}</p>
           <p>{user?.email}</p>
           <Link href="/profile" className="inline-block text-accent underline">Edit profile or change password</Link>
@@ -54,23 +54,23 @@ export default function SettingsPage() {
           {loading && <Skeleton className="h-20 w-full" />}
           {!loading && !error && health && (
             <>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-muted">
                 {health.demo_mode ? "Demo mode is enabled. Demo observations are not a training dataset." : "Demo mode is disabled. Missing sources remain unavailable."}
               </p>
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {health.components.map((provider) => (
                   <div key={provider.name} className="rounded border border-base-border p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm text-slate-700">{provider.name}</p>
+                      <p className="text-sm text-secondary">{provider.name}</p>
                       <Badge tone={provider.status === "operational" || provider.status === "online" ? "low" : "moderate"}>{provider.status}</Badge>
                     </div>
-                    <p className="mt-1 text-xs text-slate-600">{provider.mode} · {provider.detail}</p>
+                    <p className="mt-1 text-xs text-muted">{provider.mode} · {provider.detail}</p>
                   </div>
                 ))}
               </div>
             </>
           )}
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-muted">
             Data credentials and alert thresholds are managed by the project operator. Satellite catalog access does not provide verified burn-scar measurements. Changing a provider does not authorize model training.
           </p>
           <Link href="/system-health" className="inline-block text-sm text-accent underline">View system status</Link>

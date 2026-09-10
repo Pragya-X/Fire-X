@@ -105,21 +105,21 @@ export default function HotspotsPage() {
     { key: "confidence", header: "Confidence", render: (h) => <span className="font-mono">{Math.round(h.classification_confidence * 100)}%</span> },
     { key: "brightness", header: "Brightness", render: (h) => <span className="font-mono">{fmt(h.brightness)} K</span>, hideOnMobile: true },
     { key: "frp", header: "FRP", render: (h) => <span className="font-mono">{fmt(h.frp, 1)} MW</span>, hideOnMobile: true },
-    { key: "latitude", header: "Latitude", render: (h) => <span className="font-mono text-slate-600">{h.latitude.toFixed(4)}</span>, hideOnMobile: true },
-    { key: "longitude", header: "Longitude", render: (h) => <span className="font-mono text-slate-600">{h.longitude.toFixed(4)}</span>, hideOnMobile: true },
+    { key: "latitude", header: "Latitude", render: (h) => <span className="font-mono text-muted">{h.latitude.toFixed(4)}</span>, hideOnMobile: true },
+    { key: "longitude", header: "Longitude", render: (h) => <span className="font-mono text-muted">{h.longitude.toFixed(4)}</span>, hideOnMobile: true },
     { key: "state", header: "State", render: (h) => <span>{h.state}</span>, hideOnMobile: true },
     { key: "district", header: "District", render: (h) => <span>{h.district}</span>, hideOnMobile: true },
-    { key: "acquisition_time", header: "Detected", render: (h) => <span className="text-slate-600">{fmtDt(h.acquisition_time)}</span>, hideOnMobile: true },
+    { key: "acquisition_time", header: "Detected", render: (h) => <span className="text-muted">{fmtDt(h.acquisition_time)}</span>, hideOnMobile: true },
     { key: "persistence_score", header: "Persistence", render: (h) => <span className="font-mono">{Math.round(h.persistence_score)}</span>, hideOnMobile: true },
-    { key: "status", header: "Status", render: (h) => <span className="uppercase text-slate-600">{h.status}</span>, hideOnMobile: true },
+    { key: "status", header: "Status", render: (h) => <span className="uppercase text-muted">{h.status}</span>, hideOnMobile: true },
   ];
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-700 tracking-tight">Hotspot Intelligence</h1>
-          <p className="text-xs text-slate-400 mt-0.5">{total.toLocaleString()} detections · click a row for full intelligence dossier</p>
+          <h1 className="text-xl font-bold text-secondary tracking-tight">Hotspot Intelligence</h1>
+          <p className="text-xs text-muted/70 mt-0.5">{total.toLocaleString()} detections · click a row for full intelligence dossier</p>
         </div>
         <div className="flex gap-2">
           {(["csv", "json", "geojson", "pdf"] as const).map((f) => (
@@ -142,7 +142,7 @@ export default function HotspotsPage() {
         <CardBody>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted/70" />
               <Input
                 className="pl-8"
                 placeholder="Search code/state..."

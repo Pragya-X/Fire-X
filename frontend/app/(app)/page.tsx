@@ -71,8 +71,8 @@ export default function HomePage() {
   return (
     <div className="flex h-full flex-col gap-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-700">Home</h1>
-        <p className="text-xs text-slate-600">Latest stored hotspots. The default local setup uses demo data; source status appears below.</p>
+        <h1 className="text-lg font-bold text-secondary">Home</h1>
+        <p className="text-xs text-muted">Latest stored hotspots. The default local setup uses demo data; source status appears below.</p>
       </div>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {kpis.map((k) => (

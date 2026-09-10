@@ -31,7 +31,7 @@ export function SystemStatusBar() {
 
   return (
     <footer className="flex h-8 shrink-0 items-center justify-between border-t border-base-border/70 bg-base-panel/80 px-4">
-      <div className="flex items-center gap-3 text-[10px] text-slate-500">
+      <div className="flex items-center gap-3 text-[10px] text-muted">
         <span className="flex items-center gap-1.5">
           <Activity className="h-3 w-3 text-accent" />
           System
@@ -41,17 +41,17 @@ export function SystemStatusBar() {
             {health.overall}
           </span>
         ) : (
-          <span className="text-slate-600">connecting...</span>
+          <span className="text-muted">connecting...</span>
         )}
       </div>
-      <div className="hidden items-center gap-3 text-[10px] text-slate-500 sm:flex">
+      <div className="hidden items-center gap-3 text-[10px] text-muted sm:flex">
         {health?.components.slice(0, 4).map((c) => (
           <span key={c.name} className="flex items-center gap-1">
             <span className={cn("h-1.5 w-1.5 rounded-full", c.status === "operational" || c.status === "online" ? "bg-low" : c.status === "demo" || c.status === "baseline" ? "bg-moderate" : "bg-critical")} />
             {c.name.split(" ")[0]}
           </span>
         ))}
-        {health && <span className="text-slate-600">updated {timeAgo(health.checked_at)}</span>}
+        {health && <span className="text-muted">updated {timeAgo(health.checked_at)}</span>}
       </div>
     </footer>
   );
@@ -88,8 +88,8 @@ export function SystemStatusPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-slate-900">System Health</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-lg font-bold text-primary">System Health</h1>
+          <p className="text-xs text-muted">
             Overall status: <span className={cn("font-semibold uppercase", health?.overall === "operational" ? "text-low" : "text-moderate")}>{health?.overall}</span> · checked {health && timeAgo(health.checked_at)}
           </p>
         </div>
@@ -106,15 +106,15 @@ export function SystemStatusPage() {
               <CardBody>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{c.name}</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">
+                    <p className="text-sm font-semibold text-primary">{c.name}</p>
+                    <p className="mt-0.5 text-[10px] uppercase tracking-wider text-muted">
                       {c.mode || "—"} · {c.latency_ms ? `${c.latency_ms} ms` : "n/a"}
                     </p>
                   </div>
                   <Badge tone={ok ? "low" : c.status === "demo" || c.status === "baseline" ? "moderate" : "critical"}>{c.status.toUpperCase()}</Badge>
                 </div>
-                <p className="mt-2 text-[11px] leading-relaxed text-slate-600">{c.detail}</p>
-                {c.last_sync && <p className="mt-1 text-[10px] text-slate-600">Last sync: {timeAgo(c.last_sync)}</p>}
+                <p className="mt-2 text-[11px] leading-relaxed text-muted">{c.detail}</p>
+                {c.last_sync && <p className="mt-1 text-[10px] text-muted">Last sync: {timeAgo(c.last_sync)}</p>}
               </CardBody>
             </Card>
           );
@@ -125,7 +125,7 @@ export function SystemStatusPage() {
         <CardHeader>
           <CardTitle>Provider modes</CardTitle>
         </CardHeader>
-        <CardBody className="text-xs text-slate-600">
+        <CardBody className="text-xs text-muted">
           <p>
             All optional integrations degrade gracefully: when a live API key (FIRMS, satellite, Overpass) is unavailable the platform runs on seeded reference data. Configure keys in the backend{" "}
             <code className="rounded bg-base-raised px-1 py-0.5 text-sky-400">.env</code> to switch to live providers - the UI adapts automatically.

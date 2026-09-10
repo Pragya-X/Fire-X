@@ -6,16 +6,14 @@ const config: Config = {
     extend: {
       colors: {
         base: {
-          DEFAULT: "#ffffff",
-          panel: "#f8fafc",
-          raised: "#f1f5f9",
-          border: "#e2e8f0",
+          DEFAULT: "var(--color-base)",
+          panel: "var(--color-base-panel)",
+          raised: "var(--color-base-raised)",
+          border: "var(--color-base-border)",
         },
-        text: {
-          primary: "#0f172a",
-          secondary: "#334155",
-          muted: "#64748b",
-        },
+        primary: "var(--color-text-primary)",
+        secondary: "var(--color-text-secondary)",
+        muted: "var(--color-text-muted)",
         critical: "#dc2626",
         high: "#ea580c",
         moderate: "#d97706",

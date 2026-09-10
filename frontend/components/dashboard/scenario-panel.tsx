@@ -95,8 +95,8 @@ export function ScenarioPanel({
         </CardTitle>
       </CardHeader>
       <CardBody>
-        <p className="text-xs font-semibold text-slate-900">Industrial Fire Escalation Scenario</p>
-        <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+        <p className="text-xs font-semibold text-primary">Industrial Fire Escalation Scenario</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-muted">
           Persistent heat source near a refinery escalates into a CRITICAL industrial fire: classification flips, risk climbs to 87/100, an alert is auto-generated and the zone goes CRITICAL.
         </p>
         <div className="mt-3 flex gap-2">
@@ -114,9 +114,9 @@ export function ScenarioPanel({
         {result && (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs text-slate-600">Live classification:</span>
+              <span className="text-xs text-muted">Live classification:</span>
               <Badge tone="critical">{phase >= 4 ? "Industrial Fire" : phase >= 1 ? "Persistent Industrial Heat Source" : "Running..."}</Badge>
-              <span className="text-xs text-slate-600">Risk:</span>
+              <span className="text-xs text-muted">Risk:</span>
               <RiskBadge level={phase >= 4 ? "CRITICAL" : phase >= 2 ? "HIGH" : "MODERATE"} score={result.risk_trend[Math.min(phase, 3)]} />
             </div>
 
@@ -133,13 +133,13 @@ export function ScenarioPanel({
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      {shown ? <CheckCircle2 className="h-3.5 w-3.5 text-low" /> : <ChevronRight className="h-3.5 w-3.5 text-slate-600" />}
-                      <span className={cn("text-xs font-semibold", shown ? "text-slate-900" : "text-slate-500")}>
+                      {shown ? <CheckCircle2 className="h-3.5 w-3.5 text-low" /> : <ChevronRight className="h-3.5 w-3.5 text-muted" />}
+                      <span className={cn("text-xs font-semibold", shown ? "text-primary" : "text-muted")}>
                         Phase {s.phase}: {s.title}
                       </span>
-                      {shown && <span className="ml-auto font-mono text-[10px] text-slate-600">risk {Math.round(s.risk_score)}</span>}
+                      {shown && <span className="ml-auto font-mono text-[10px] text-muted">risk {Math.round(s.risk_score)}</span>}
                     </div>
-                    {shown && <p className="mt-1 pl-5 text-[11px] text-slate-500">{s.detail}</p>}
+                    {shown && <p className="mt-1 pl-5 text-[11px] text-muted">{s.detail}</p>}
                   </li>
                 );
               })}
@@ -148,7 +148,7 @@ export function ScenarioPanel({
             {visibleSteps >= 5 && (
               <div className="flex flex-wrap items-center gap-3 rounded-md border border-critical/40 bg-critical/5 px-3 py-2.5">
                 <span className="text-xs font-semibold text-critical">CRITICAL ALERT GENERATED</span>
-                <span className="text-xs text-slate-700">{result.alert.code}</span>
+                <span className="text-xs text-secondary">{result.alert.code}</span>
                 <span className="ml-auto flex gap-2">
                   <Link href={`/hotspots/${result.hotspot.id}`}>
                     <Button size="sm" variant="outline">View hotspot</Button>

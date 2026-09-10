@@ -68,8 +68,8 @@ export default function SatelliteValidationPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-700 tracking-tight">Satellite Validation</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Remote sensing analysis · before/after comparison · NDVI, burn area, fire extent</p>
+          <h1 className="text-xl font-bold text-secondary tracking-tight">Satellite Validation</h1>
+          <p className="text-xs text-muted/70 mt-0.5">Remote sensing analysis · before/after comparison · NDVI, burn area, fire extent</p>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export default function SatelliteValidationPage() {
             <CardHeader><CardTitle>Before / after comparison</CardTitle></CardHeader>
             <CardBody>
               <SatelliteComparison validation={current} />
-              <p className="mt-3 text-[10px] leading-relaxed text-slate-400">
+              <p className="mt-3 text-[10px] leading-relaxed text-muted/70">
                 Scene rendered from validation parameters (NDVI, burn area, fire extent, smoke). Live Sentinel-2 / Landsat imagery is used automatically when SATELLITE_API_KEY is configured.
               </p>
             </CardBody>
@@ -117,25 +117,25 @@ export default function SatelliteValidationPage() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Badge tone={STATUS_TONE[current.status] ?? "muted"}>{current.status}</Badge>
-                      <span className="text-[10px] text-slate-400">provider: {current.provider.toUpperCase()}</span>
+                      <span className="text-[10px] text-muted/70">provider: {current.provider.toUpperCase()}</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { l: "Smoke indication", v: current.smoke_indication === null ? "Unavailable" : current.smoke_indication ? "DETECTED" : "None", icon: <Cloud className="h-3.5 w-3.5" />, tone: current.smoke_indication ? "text-critical" : "text-low" },
-                        { l: "Burn area", v: current.burn_area_ha === null ? "Unavailable" : `${fmt(current.burn_area_ha)} ha`, icon: <TreePine className="h-3.5 w-3.5" />, tone: "text-slate-700" },
-                        { l: "Fire extent", v: current.fire_extent_km2 === null ? "Unavailable" : `${fmt(current.fire_extent_km2, 2)} km²`, icon: <Waves className="h-3.5 w-3.5" />, tone: "text-slate-700" },
+                        { l: "Burn area", v: current.burn_area_ha === null ? "Unavailable" : `${fmt(current.burn_area_ha)} ha`, icon: <TreePine className="h-3.5 w-3.5" />, tone: "text-secondary" },
+                        { l: "Fire extent", v: current.fire_extent_km2 === null ? "Unavailable" : `${fmt(current.fire_extent_km2, 2)} km²`, icon: <Waves className="h-3.5 w-3.5" />, tone: "text-secondary" },
                         { l: "Vegetation delta (NDVI)", v: `${current.ndvi_before?.toFixed(2) ?? "Unavailable"} → ${current.ndvi_after?.toFixed(2) ?? "Unavailable"}`, icon: <Sprout className="h-3.5 w-3.5" />, tone: current.ndvi_after !== null && current.ndvi_before !== null && current.ndvi_after < current.ndvi_before ? "text-moderate" : "text-low" },
                       ].map((x) => (
                         <div key={x.l} className="rounded-md border border-base-border/50 bg-base-raised/40 px-3 py-2.5">
-                          <p className="flex items-center gap-1.5 text-[9px] uppercase tracking-wider text-slate-400">{x.icon}{x.l}</p>
+                          <p className="flex items-center gap-1.5 text-[9px] uppercase tracking-wider text-muted/70">{x.icon}{x.l}</p>
                           <p className={`mt-1 text-sm font-bold ${x.tone}`}>{x.v}</p>
                         </div>
                       ))}
                     </div>
-                    {current.notes && <p className="rounded border border-base-border/40 bg-base-raised/30 px-3 py-2 text-[11px] text-slate-600">{current.notes}</p>}
+                    {current.notes && <p className="rounded border border-base-border/40 bg-base-raised/30 px-3 py-2 text-[11px] text-muted">{current.notes}</p>}
                   </div>
                 ) : (
-                  <p className="py-4 text-center text-xs text-slate-400">No validation record yet for this hotspot. Run validation to generate one.</p>
+                  <p className="py-4 text-center text-xs text-muted/70">No validation record yet for this hotspot. Run validation to generate one.</p>
                 )}
               </CardBody>
             </Card>
@@ -143,11 +143,11 @@ export default function SatelliteValidationPage() {
             {hotspot && (
               <Card>
                 <CardHeader><CardTitle>Hotspot context</CardTitle></CardHeader>
-                <CardBody className="text-xs text-slate-600">
-                  <p><span className="text-slate-400">Classification:</span> <span className="text-slate-700">{hotspot.classification}</span></p>
-                  <p className="mt-1"><span className="text-slate-400">Brightness:</span> <span className="text-slate-700">{fmt(hotspot.brightness)} K</span></p>
-                  <p className="mt-1"><span className="text-slate-400">FRP:</span> <span className="text-slate-700">{fmt(hotspot.frp, 1)} MW</span></p>
-                  <p className="mt-1"><span className="text-slate-400">Location:</span> <span className="text-slate-700">{hotspot.latitude.toFixed(4)}, {hotspot.longitude.toFixed(4)}</span></p>
+                <CardBody className="text-xs text-muted">
+                  <p><span className="text-muted/70">Classification:</span> <span className="text-secondary">{hotspot.classification}</span></p>
+                  <p className="mt-1"><span className="text-muted/70">Brightness:</span> <span className="text-secondary">{fmt(hotspot.brightness)} K</span></p>
+                  <p className="mt-1"><span className="text-muted/70">FRP:</span> <span className="text-secondary">{fmt(hotspot.frp, 1)} MW</span></p>
+                  <p className="mt-1"><span className="text-muted/70">Location:</span> <span className="text-secondary">{hotspot.latitude.toFixed(4)}, {hotspot.longitude.toFixed(4)}</span></p>
                 </CardBody>
               </Card>
             )}

@@ -12,9 +12,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-accent text-white hover:bg-accent/90",
-        secondary: "bg-white text-slate-700 border border-base-border hover:bg-slate-50",
-        ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-        outline: "border border-base-border bg-white text-slate-700 hover:bg-slate-50",
+        secondary: "bg-base text-secondary border border-base-border hover:bg-base-panel",
+        ghost: "text-muted hover:bg-base-raised hover:text-primary",
+        outline: "border border-base-border bg-base text-secondary hover:bg-base-panel",
         danger: "bg-critical text-white hover:bg-critical/90",
         success: "bg-low text-white border border-low/40 hover:bg-low/80",
         link: "text-accent underline-offset-4 hover:underline",
@@ -42,7 +42,7 @@ Button.displayName = "Button";
 /* ----------------------------------- Card ----------------------------------- */
 export function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("rounded-lg border border-base-border bg-white shadow-sm", className)} {...props} >
+    <div className={cn("rounded-lg border border-base-border bg-base shadow-sm", className)} {...props} >
       {children}
     </div>
   );
@@ -53,7 +53,7 @@ export function CardHeader({ className, children }: { className?: string; childr
 }
 
 export function CardTitle({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <h3 className={cn("text-sm font-semibold tracking-wide text-slate-900", className)}>{children}</h3>;
+  return <h3 className={cn("text-sm font-semibold tracking-wide text-primary", className)}>{children}</h3>;
 }
 
 export function CardBody({ className, children }: { className?: string; children: React.ReactNode }) {
@@ -68,7 +68,7 @@ const toneClass: Record<BadgeTone, string> = {
   moderate: "bg-amber-50 text-amber-700 border-amber-300",
   low: "bg-green-50 text-green-700 border-green-300",
   info: "bg-blue-50 text-blue-700 border-blue-300",
-  muted: "bg-slate-100 text-slate-600 border-slate-300",
+  muted: "bg-base-panel text-muted border-base-border",
   purple: "bg-purple-50 text-purple-700 border-purple-300",
 };
 
@@ -86,7 +86,7 @@ export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <input
       ref={ref}
-      className={cn("h-9 w-full rounded-md border border-base-border bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40 disabled:opacity-50", className)}
+      className={cn("h-9 w-full rounded-md border border-base-border bg-base px-3 text-sm text-primary placeholder:text-muted focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40 disabled:opacity-50", className)}
       {...props}
     />
   )
@@ -96,7 +96,7 @@ Input.displayName = "Input";
 /* ---------------------------------- Select ---------------------------------- */
 export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn("h-9 w-full appearance-none rounded-md border border-base-border bg-white px-3 text-sm text-slate-900 focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40", className)} {...props}>
+    <select className={cn("h-9 w-full appearance-none rounded-md border border-base-border bg-base px-3 text-sm text-primary focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40", className)} {...props}>
       {children}
     </select>
   );
@@ -105,7 +105,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
 /* ---------------------------------- Textarea --------------------------------- */
 export const Textarea = forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
   ({ className, ...props }, ref) => (
-    <textarea ref={ref} className={cn("w-full rounded-md border border-base-border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40", className)} {...props} />
+    <textarea ref={ref} className={cn("w-full rounded-md border border-base-border bg-base px-3 py-2 text-sm text-primary placeholder:text-muted focus:border-accent/60 focus:outline-none focus:ring-1 focus:ring-accent/40", className)} {...props} />
   )
 );
 Textarea.displayName = "Textarea";
@@ -122,10 +122,10 @@ export function Dialog({ open, onClose, title, children, wide }: { open: boolean
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-16" onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
-      <div className={cn("w-full animate-fadeIn rounded-lg border border-base-border bg-white shadow-sm", wide ? "max-w-4xl" : "max-w-2xl")} onClick={(e) => e.stopPropagation()}>
+      <div className={cn("w-full animate-fadeIn rounded-lg border border-base-border bg-base shadow-sm", wide ? "max-w-4xl" : "max-w-2xl")} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-base-border/70 px-5 py-3">
-          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-          <button onClick={onClose} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-900" aria-label="Close dialog">
+          <h3 className="text-sm font-semibold text-primary">{title}</h3>
+          <button onClick={onClose} className="rounded p-1 text-muted hover:bg-base-raised hover:text-primary" aria-label="Close dialog">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -137,15 +137,15 @@ export function Dialog({ open, onClose, title, children, wide }: { open: boolean
 
 /* ---------------------------------- Skeleton --------------------------------- */
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded bg-slate-200/60", className)} />;
+  return <div className={cn("animate-pulse rounded bg-base-raised", className)} />;
 }
 
 /* ---------------------------------- Empty / Error --------------------------------- */
 export function EmptyState({ title, message }: { title: string; message?: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-      <p className="text-sm font-medium text-slate-500">{title}</p>
-      {message && <p className="max-w-sm text-xs text-slate-400">{message}</p>}
+      <p className="text-sm font-medium text-muted">{title}</p>
+      {message && <p className="max-w-sm text-xs text-muted/70">{message}</p>}
     </div>
   );
 }
@@ -187,9 +187,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div className="pointer-events-none fixed bottom-4 right-4 z-[90] flex w-80 flex-col gap-2" role="status" aria-live="polite">
         {toasts.map((t) => (
-          <div key={t.id} className={cn("animate-fadeIn rounded-lg border bg-white p-3 shadow-sm", toneClass[t.tone])}>
-            <p className="text-xs font-semibold text-slate-900">{t.title}</p>
-            {t.message && <p className="mt-0.5 text-xs text-slate-500">{t.message}</p>}
+          <div key={t.id} className={cn("animate-fadeIn rounded-lg border bg-base p-3 shadow-sm", toneClass[t.tone])}>
+            <p className="text-xs font-semibold text-primary">{t.title}</p>
+            {t.message && <p className="mt-0.5 text-xs text-muted">{t.message}</p>}
           </div>
         ))}
       </div>
@@ -204,9 +204,9 @@ export function useToast() {
 /* ---------------------------------- Tabs ---------------------------------- */
 export function Tabs({ tabs, active, onChange }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
   return (
-    <div className="flex flex-wrap gap-1 rounded-md border border-base-border bg-slate-50 p-1" role="tablist">
+    <div className="flex flex-wrap gap-1 rounded-md border border-base-border bg-base-panel p-1" role="tablist">
       {tabs.map((t) => (
-        <button key={t.id} role="tab" aria-selected={active === t.id} onClick={() => onChange(t.id)} className={cn("rounded px-3 py-1.5 text-xs font-medium transition-colors", active === t.id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900")}>
+        <button key={t.id} role="tab" aria-selected={active === t.id} onClick={() => onChange(t.id)} className={cn("rounded px-3 py-1.5 text-xs font-medium transition-colors", active === t.id ? "bg-base text-primary shadow-sm" : "text-muted hover:text-primary")}>
           {t.label}
         </button>
       ))}
@@ -220,17 +220,17 @@ export function Table({ className, children, ...props }: React.TableHTMLAttribut
 }
 
 export function TableHeader({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <thead className={cn("border-b border-base-border bg-slate-50", className)}>{children}</thead>;
+  return <thead className={cn("border-b border-base-border bg-base-panel", className)}>{children}</thead>;
 }
 
 export function TableRow({ className, children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn("border-b border-base-border/40 hover:bg-slate-50 transition-colors", className)} {...props} />;
+  return <tr className={cn("border-b border-base-border/40 hover:bg-base-panel transition-colors", className)} {...props} />;
 }
 
 export function TableCell({ className, children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-3 py-2 text-slate-700", className)} {...props} />;
+  return <td className={cn("px-3 py-2 text-secondary", className)} {...props} />;
 }
 
 export function TableHead({ className, children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) {
-  return <th className={cn("px-3 py-2 text-left text-xs font-medium text-slate-500", className)} {...props} />;
+  return <th className={cn("px-3 py-2 text-left text-xs font-medium text-muted", className)} {...props} />;
 }

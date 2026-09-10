@@ -43,7 +43,7 @@ export function NotificationCenter({
   return (
     <div className="absolute right-0 top-11 z-50 w-80 rounded-lg border border-base-border bg-base-panel shadow-panel" role="menu" aria-label="Notifications">
       <div className="flex items-center justify-between border-b border-base-border/70 px-3 py-2">
-        <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-900">
+        <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
           <BellRing className="h-3.5 w-3.5 text-accent" /> Notifications
         </span>
         <button onClick={onMarkRead} className="text-[10px] text-accent hover:underline">
@@ -51,16 +51,16 @@ export function NotificationCenter({
         </button>
       </div>
       <div className="max-h-80 overflow-y-auto">
-        {items.length === 0 && <p className="px-3 py-6 text-center text-xs text-slate-500">No notifications yet.</p>}
+        {items.length === 0 && <p className="px-3 py-6 text-center text-xs text-muted">No notifications yet.</p>}
         {items.map((n) => {
           const clickable = hrefFor(n) !== null;
           const inner = (
             <>
               <span className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", n.read ? "bg-slate-600" : toneDot[n.severity] || "bg-info")} />
               <div className="min-w-0">
-                <p className={cn("text-xs", n.read ? "font-normal text-slate-500" : "font-semibold text-slate-100")}>{n.title}</p>
-                <p className="mt-0.5 line-clamp-2 text-[11px] text-slate-500">{n.message}</p>
-                <p className="mt-0.5 text-[9px] text-slate-600">{timeAgo(n.created_at)}</p>
+                <p className={cn("text-xs", n.read ? "font-normal text-muted" : "font-semibold text-slate-100")}>{n.title}</p>
+                <p className="mt-0.5 line-clamp-2 text-[11px] text-muted">{n.message}</p>
+                <p className="mt-0.5 text-[9px] text-muted">{timeAgo(n.created_at)}</p>
               </div>
             </>
           );
@@ -68,7 +68,7 @@ export function NotificationCenter({
             <button
               key={n.id}
               onClick={() => open(n)}
-              className="flex w-full gap-2.5 border-b border-base-border/40 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-slate-100/40"
+              className="flex w-full gap-2.5 border-b border-base-border/40 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-base-raised/40"
             >
               {inner}
             </button>
@@ -79,7 +79,7 @@ export function NotificationCenter({
           );
         })}
       </div>
-      <button onClick={onClose} className="w-full border-t border-base-border/70 py-1.5 text-[10px] text-slate-500 hover:text-slate-700">
+      <button onClick={onClose} className="w-full border-t border-base-border/70 py-1.5 text-[10px] text-muted hover:text-secondary">
         Close
       </button>
     </div>

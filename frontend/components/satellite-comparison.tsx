@@ -92,7 +92,7 @@ export function SatelliteComparison({ validation, label = "Demo Satellite Layer"
     ctx.fillRect(x, 0, W - x, H);
   }, [validation, slider]);
 
-  if (validation && validation.provider !== "demo") return <div className="rounded-lg border border-base-border p-6 text-sm text-slate-600">Imagery pixels have not been analyzed. No before/after image, smoke, burn area or NDVI measurement is available. {validation.notes}</div>;
+  if (validation && validation.provider !== "demo") return <div className="rounded-lg border border-base-border p-6 text-sm text-muted">Imagery pixels have not been analyzed. No before/after image, smoke, burn area or NDVI measurement is available. {validation.notes}</div>;
 
   return (
     <div className="w-full">
@@ -111,7 +111,7 @@ export function SatelliteComparison({ validation, label = "Demo Satellite Layer"
         className="mt-3 w-full accent-sky-500"
         aria-label="Before/after comparison slider"
       />
-      <div className="flex justify-between text-[10px] text-slate-500">
+      <div className="flex justify-between text-[10px] text-muted">
         <span>Before (NDVI {validation?.ndvi_before ?? "-"})</span>
         <span>After (NDVI {validation?.ndvi_after ?? "-"})</span>
       </div>
