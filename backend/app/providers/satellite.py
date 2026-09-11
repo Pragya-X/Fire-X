@@ -71,8 +71,8 @@ class LiveSatelliteProvider(SatelliteProvider):
             ],
         }
 
-        # Search from 5 days before to 1 day after detection
-        start_time = (hotspot.acquisition_time - timedelta(days=5)).isoformat()
+        # Search last 2 days only for faster query (instead of 5 before + 1 after = 6 days)
+        start_time = (hotspot.acquisition_time - timedelta(days=1)).isoformat()
         if not start_time.endswith("Z") and "+" not in start_time:
             start_time += "Z"
             
@@ -111,7 +111,7 @@ class LiveSatelliteProvider(SatelliteProvider):
                     "https://api.planet.com/data/v1/quick-search",
                     json=search_payload,
                     auth=(settings.SATELLITE_API_KEY, ""),
-                    timeout=10.0
+                    timeout=3.0  # faster timeout for quick response
                 )
             
             resp.raise_for_status()

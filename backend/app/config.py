@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "*"
 
     # Demo
-    DEMO_MODE: bool = True
+    DEMO_MODE: bool = False
 
     # Auto-sync: run the FIRMS ingest on a server-side schedule. NASA FIRMS
     # feeds refresh roughly hourly; 15 minutes keeps data fresh without

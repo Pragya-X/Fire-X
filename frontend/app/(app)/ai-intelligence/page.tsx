@@ -32,7 +32,7 @@ export default function AiIntelligencePage() {
 
   const load = useCallback(() => {
     loadStatus();
-    getHotspots({ page_size: 100, sort: "risk_score", order: "desc" }).then((r) => setHotspots(r.items)).catch(() => undefined);
+    getHotspots({ page_size: 30, sort: "risk_score", order: "desc" }).then((r) => setHotspots(r.items)).catch(() => undefined);
   }, [loadStatus]);
 
   useEffect(load, [load]);

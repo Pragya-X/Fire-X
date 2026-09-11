@@ -14,7 +14,7 @@ const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, c
 const LIGHT_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
 const SATELLITE_TILES =
   process.env.NEXT_PUBLIC_SATELLITE_TILE_URL ||
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+  "https://basemaps.cartocdn.com/rastertiles/satellite/{z}/{x}/{y}.png";
 
 const INDIA_BOUNDS: [[number, number], [number, number]] = [
   [66.5, 6.5],
@@ -127,7 +127,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
   const selectedRef = useRef(selectedId);
   selectedRef.current = selectedId;
 
-  const [basemap, setBasemap] = useState<"light" | "satellite">("light");
+  const [basemap, setBasemap] = useState<"light" | "satellite">("satellite");
   const [visible, setVisible] = useState<Record<LayerId, boolean>>(DEFAULT_VISIBLE);
   const [ready, setReady] = useState(false);
   const [infra, setInfra] = useState<GeoJson | null>(null);
@@ -153,7 +153,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: {
           basemap: { type: "raster", tiles: [LIGHT_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
-          satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© Esri" },
+          satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© CartoDB" },
         },
         layers: [
           { id: "satellite-layer", type: "raster", source: "satellite", layout: { visibility: "none" } },
@@ -173,6 +173,13 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
     map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+
+    // Handle tile loading errors
+    map.on("tileerror", (e) => {
+      console.warn("Tile loading error:", e.tile, e.error);
+      // Optional: Could implement retry logic or fallback here
+    });
+
     map.on("load", () => {
       setReady(true);
       map.fitBounds(INDIA_BOUNDS, { padding: 24, duration: 0 });
