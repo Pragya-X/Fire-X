@@ -2,37 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------- Theme tokens ---------------------------------- */
+/* Light values are the root default; `.dark` on <html> switches every token.        */
 :root {
-  --color-base: #ffffff;
-  --color-base-panel: #f8fafc;
-  --color-base-raised: #f1f5f9;
-  --color-base-border: #e2e8f0;
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #64748b;
+  --rgb-base: 255 255 255;
+  --rgb-base-panel: 248 250 252;
+  --rgb-base-raised: 241 245 249;
+  --rgb-base-border: 226 232 240;
+  --rgb-primary: 15 23 42;
+  --rgb-secondary: 71 85 105;
+  --rgb-muted: 100 116 139;
   color-scheme: light;
 }
 
-/* Default to dark theme on first load */
-html {
-  color-scheme: dark;
-}
-
-html.dark-theme,
-.dark-theme body {
-  background-color: var(--color-base-dark, #04070d);
-  background-image: radial-gradient(circle at top, rgba(2, 132, 199, 0.05) 0%, transparent 60%),
-                    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
-  color: var(--color-text-primary-dark, #e2e8f0);
-}
-.dark-theme {
-  --color-base: #04070d;
-  --color-base-panel: #0a101c;
-  --color-base-raised: rgba(15, 23, 42, 0.6);
-  --color-base-border: rgba(30, 41, 59, 0.7);
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #94a3b8;
+.dark {
+  --rgb-base: 0 0 0;
+  --rgb-base-panel: 10 10 11;
+  --rgb-base-raised: 22 22 24;
+  --rgb-base-border: 39 39 44;
+  --rgb-primary: 245 245 245;
+  --rgb-secondary: 212 212 216;
+  --rgb-muted: 161 161 170;
   color-scheme: dark;
 }
 
@@ -42,58 +32,85 @@ body {
 }
 
 body {
-  background-color: var(--color-base);
-  color: var(--color-text-primary);
+  background-color: rgb(var(--rgb-base));
+  color: rgb(var(--rgb-primary));
   @apply antialiased;
 }
 
-/* Thin scrollbars */
+
+/* --------------------------- Scrollbars that follow theme -------------------------- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #1e293b transparent;
+  scrollbar-color: rgb(var(--rgb-base-border)) transparent;
 }
 *::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgb(var(--rgb-base-border));
   border-radius: 3px;
 }
 
-/* MapLibre overrides for dark theme */
+/* ------------------------------ MapLibre overrides -------------------------------- */
 .maplibregl-ctrl-group {
-  background: #0a101c !important;
-  border: 1px solid #1e293b !important;
+  background: #ffffff !important;
+  border: 1px solid rgb(var(--rgb-base-border)) !important;
   border-radius: 4px !important;
   box-shadow: none !important;
 }
 .maplibregl-ctrl-group button {
-  color: #cbd5e1;
+  color: #334155;
 }
 .maplibregl-ctrl-group button:hover {
-  background: rgba(51, 65, 85, 0.6) !important;
+  background: rgba(51, 65, 85, 0.1) !important;
 }
 .maplibregl-ctrl-attrib {
-  background: rgba(4, 7, 13, 0.7) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
   color: #64748b !important;
   font-size: 9px !important;
 }
 .maplibregl-ctrl-attrib a {
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 .maplibregl-popup-content {
-  background: #0a101c !important;
-  border: 1px solid #1e293b !important;
-  border-radius: 8px !important;
-  color: #e2e8f0 !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
+  background: #ffffff !important;
+  border: 1px solid rgb(var(--rgb-base-border)) !important;
+  border-radius: 6px !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 .maplibregl-popup-tip {
-  border-top-color: #0a101c !important;
+  border-top-color: #ffffff !important;
 }
 
-/* Critical MapLibre GL canvas styles - ensures map renders correctly */
+.dark .maplibregl-ctrl-group {
+  background: #0a0a0b !important;
+  border-color: rgb(var(--rgb-base-border)) !important;
+}
+.dark .maplibregl-ctrl-group button {
+  color: #cbd5e1;
+}
+.dark .maplibregl-ctrl-group button:hover {
+  background: rgba(51, 65, 85, 0.6) !important;
+}
+.dark .maplibregl-ctrl-attrib {
+  background: rgba(9, 14, 26, 0.7) !important;
+  color: #64748b !important;
+}
+.dark .maplibregl-ctrl-attrib a {
+  color: #94a3b8 !important;
+}
+.dark .maplibregl-popup-content {
+  background: #0a0a0b !important;
+  color: #e4e4e7 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
+}
+.dark .maplibregl-popup-tip {
+  border-top-color: #0a0a0b !important;
+}
+
+/* ---------------------- Critical MapLibre GL canvas styles ------------------------ */
 .maplibregl-map {
   position: relative;
   width: 100%;
@@ -112,7 +129,7 @@ body {
   outline: none;
 }
 
-/* Slide-in animation for mobile sidebar drawer */
+/* ------------------------ Slide-in for mobile sidebar drawer ---------------------- */
 @keyframes slideIn {
   from { transform: translateX(-100%); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }

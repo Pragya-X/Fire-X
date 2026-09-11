@@ -56,9 +56,9 @@ export function NotificationCenter({
           const clickable = hrefFor(n) !== null;
           const inner = (
             <>
-              <span className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", n.read ? "bg-slate-600" : toneDot[n.severity] || "bg-info")} />
+              <span className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", n.read ? "bg-base-border" : toneDot[n.severity] || "bg-info")} />
               <div className="min-w-0">
-                <p className={cn("text-xs", n.read ? "font-normal text-muted" : "font-semibold text-slate-100")}>{n.title}</p>
+                <p className={cn("text-xs", n.read ? "font-normal text-muted" : "font-semibold text-primary")}>{n.title}</p>
                 <p className="mt-0.5 line-clamp-2 text-[11px] text-muted">{n.message}</p>
                 <p className="mt-0.5 text-[9px] text-muted">{timeAgo(n.created_at)}</p>
               </div>

@@ -70,14 +70,11 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   };
 
   const content = (
-    <div className="flex h-full flex-col" style={{ background: "linear-gradient(180deg, #07101f 0%, #04070d 100%)", borderRight: "1px solid rgba(30,41,59,0.8)" }}>
+    <div className="flex h-full flex-col border-r border-base-border bg-base-panel">
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 py-4" style={{ borderBottom: "1px solid rgba(30,41,59,0.6)" }}>
+      <div className="flex items-center justify-between border-b border-base-border px-4 py-4">
         <Link href="/" className="flex items-center gap-3" onClick={onClose}>
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ background: "linear-gradient(135deg, #0284c7 0%, #7c3aed 100%)", boxShadow: "0 0 16px rgba(2,132,199,0.35)" }}
-          >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent">
             <Flame className="h-5 w-5 text-white" fill="white" strokeWidth={2.2} />
           </div>
           <div>
@@ -114,7 +111,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
       </nav>
 
       {/* User footer */}
-      <div className="p-3" style={{ borderTop: "1px solid rgba(30,41,59,0.6)" }}>
+      <div className="border-t border-base-border p-3">
         <Link
           href="/profile"
           className="flex items-center gap-2.5 rounded-xl p-2.5 transition-colors hover:bg-base-raised/50"

@@ -16,9 +16,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  // Initialize dark theme immediately on mount
+  // Re-assert the persisted theme on mount (inline script in the root layout
+  // already applies it before first paint; this guards client-side navigation).
   useEffect(() => {
-    document.documentElement.classList.add("dark-theme");
+    const theme = localStorage.getItem("firex-theme") || "dark";
+    document.documentElement.classList.toggle("dark", theme === "dark");
   }, []);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg border border-base-border bg-slate-800">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg border border-base-border bg-base-panel">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </svg>

@@ -6,14 +6,14 @@ const config: Config = {
     extend: {
       colors: {
         base: {
-          DEFAULT: "var(--color-base)",
-          panel: "var(--color-base-panel)",
-          raised: "var(--color-base-raised)",
-          border: "var(--color-base-border)",
+          DEFAULT: "rgb(var(--rgb-base) / <alpha-value>)",
+          panel: "rgb(var(--rgb-base-panel) / <alpha-value>)",
+          raised: "rgb(var(--rgb-base-raised) / <alpha-value>)",
+          border: "rgb(var(--rgb-base-border) / <alpha-value>)",
         },
-        primary: "var(--color-text-primary)",
-        secondary: "var(--color-text-secondary)",
-        muted: "var(--color-text-muted)",
+        primary: "rgb(var(--rgb-primary) / <alpha-value>)",
+        secondary: "rgb(var(--rgb-secondary) / <alpha-value>)",
+        muted: "rgb(var(--rgb-muted) / <alpha-value>)",
         critical: "#dc2626",
         high: "#ea580c",
         moderate: "#d97706",
@@ -38,6 +38,7 @@ const config: Config = {
       boxShadow: {
         sm: "0 1px 2px rgba(15, 23, 42, 0.06)",
         md: "0 4px 6px rgba(15, 23, 42, 0.08)",
+        panel: "0 8px 30px rgba(2, 8, 23, 0.25)",
       },
       animation: {
         fadeIn: "fadeIn 0.25s ease-out",

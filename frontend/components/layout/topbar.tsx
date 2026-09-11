@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, Menu, Search } from "lucide-react";
 import { searchHotspots } from "@/lib/search";
 import { getNotifications, markNotificationsRead, markNotificationRead } from "@/lib/api";
+import { applyTheme, getTheme, type Theme } from "@/lib/theme";
 import { Button, Dialog, useToast } from "@/components/ui/primitives";
 import { NotificationCenter } from "@/components/notification-center";
 import { useSSE } from "@/hooks/useSSE";
@@ -18,12 +19,17 @@ export function Topbar({ onMenu, pathname }: { onMenu: () => void; pathname: str
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
-    if (theme === "dark") document.documentElement.classList.add("dark-theme");
-    else document.documentElement.classList.remove("dark-theme");
-  }, [theme]);
+    setTheme(getTheme());
+  }, []);
+
+  const toggleTheme = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    applyTheme(next);
+  };
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ label: string; href: string; meta: string }[]>([]);
@@ -87,12 +93,7 @@ export function Topbar({ onMenu, pathname }: { onMenu: () => void; pathname: str
   return (
     <>
       <header
-        className="flex h-14 shrink-0 items-center justify-between gap-3 px-4"
-        style={{
-          background: "linear-gradient(90deg, #07101f 0%, #04070d 100%)",
-          borderBottom: "1px solid rgba(30,41,59,0.7)",
-          backdropFilter: "blur(8px)",
-        }}
+        className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-base-border bg-base-panel/80 px-4 backdrop-blur"
       >
         {/* Left */}
         <div className="flex items-center gap-3">
@@ -129,7 +130,7 @@ export function Topbar({ onMenu, pathname }: { onMenu: () => void; pathname: str
 
           {/* Theme toggle */}
           <button
-            onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+            onClick={toggleTheme}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-muted transition-colors hover:bg-base-raised hover:text-primary"
             aria-label="Toggle theme"
           >

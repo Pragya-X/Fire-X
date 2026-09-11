@@ -10,6 +10,62 @@ interface Message {
   text: string;
 }
 
+/* ------------------------- Minimal markdown rendering ------------------------- */
+
+function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\n]+\*|`[^`]+`)/g);
+  return parts.map((part, i) => {
+    if (/^\*\*[^*]+\*\*$/.test(part)) {
+      return <strong key={`${keyPrefix}-${i}`} className="font-semibold text-primary">{part.slice(2, -2)}</strong>;
+    }
+    if (/^\*[^*]+\*$/.test(part)) {
+      return <em key={`${keyPrefix}-${i}`}>{part.slice(1, -1)}</em>;
+    }
+    if (/^`[^`]+`$/.test(part)) {
+      return <code key={`${keyPrefix}-${i}`} className="rounded bg-base px-1 py-0.5 font-mono text-[12px]">{part.slice(1, -1)}</code>;
+    }
+    return <span key={`${keyPrefix}-${i}`}>{part}</span>;
+  });
+}
+
+function MarkdownMessage({ text }: { text: string }) {
+  const blocks: React.ReactNode[] = [];
+  let listItems: string[] = [];
+
+  const flushList = (key: string) => {
+    if (listItems.length > 0) {
+      blocks.push(
+        <ul key={key} className="ml-4 list-disc space-y-1">
+          {listItems.map((item, i) => (
+            <li key={i}>{renderInline(item, `${key}-${i}`)}</li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  text.split("\n").forEach((line, idx) => {
+    const bullet = /^\s*[*\-•]\s+(.*)$/.exec(line);
+    const heading = /^\s*#{1,6}\s+(.*)$/.exec(line);
+
+    if (bullet) {
+      listItems.push(bullet[1]);
+      return;
+    }
+    flushList(`ul-${idx}`);
+    if (heading) {
+      blocks.push(<p key={idx} className="font-semibold text-primary">{renderInline(heading[1], `h-${idx}`)}</p>);
+      return;
+    }
+    if (line.trim() === "") return;
+    blocks.push(<p key={idx}>{renderInline(line, `p-${idx}`)}</p>);
+  });
+  flushList("ul-end");
+
+  return <div className="space-y-1.5">{blocks}</div>;
+}
+
 const SYSTEM_PROMPT = `You are FIRE-X Intelligence Assistant, an expert AI embedded in the FIRE-X geospatial fire intelligence platform for India.
 
 You help users understand:
@@ -34,6 +90,7 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const modelId = process.env.NEXT_PUBLIC_GEMINI_MODEL || "gemini-3.6-flash";
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
@@ -59,7 +116,7 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: modelId,
         systemInstruction: SYSTEM_PROMPT,
       });
 
@@ -96,15 +153,12 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
 
   return (
     <div
-      className="fixed bottom-10 right-4 z-50 flex w-[360px] flex-col overflow-hidden rounded-2xl border border-base-border shadow-2xl"
-      style={{
-        background: "linear-gradient(160deg, #0a101c 0%, #04070d 100%)",
-        maxHeight: "calc(100vh - 120px)",
-      }}
+      className="flex w-[360px] flex-col overflow-hidden rounded-2xl border border-base-border bg-base-panel shadow-2xl"
+      style={{ maxHeight: "calc(100vh - 120px)" }}
     >
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-base-border/60 px-4 py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-blue-700">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
           <Sparkles className="h-4 w-4 text-white" />
         </div>
         <div className="flex-1">
@@ -125,7 +179,7 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-2", m.role === "user" ? "flex-row-reverse" : "flex-row")}>
             {m.role === "model" && (
-              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-blue-700">
+              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent">
                 <Bot className="h-3.5 w-3.5 text-white" />
               </div>
             )}
@@ -137,19 +191,23 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
                   : "rounded-tl-sm bg-base-raised/80 text-primary"
               )}
             >
-              {m.text.split("\n").map((line, j) => (
-                <span key={j}>
-                  {line}
-                  {j < m.text.split("\n").length - 1 && <br />}
-                </span>
-              ))}
+              {m.role === "user" ? (
+                m.text.split("\n").map((line, j) => (
+                  <span key={j}>
+                    {line}
+                    {j < m.text.split("\n").length - 1 && <br />}
+                  </span>
+                ))
+              ) : (
+                <MarkdownMessage text={m.text} />
+              )}
             </div>
           </div>
         ))}
 
         {loading && (
           <div className="flex gap-2">
-            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-blue-700">
+            <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent">
               <Bot className="h-3.5 w-3.5 text-white" />
             </div>
             <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-base-raised/80 px-3 py-2.5">

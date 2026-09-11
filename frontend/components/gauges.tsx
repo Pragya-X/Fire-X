@@ -53,7 +53,7 @@ export function ConfidenceGauge({ value, label = "Confidence" }: { value: number
           {Math.round(pct)}%
         </span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-base-raised">
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
       </div>
     </div>

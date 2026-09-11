@@ -39,7 +39,7 @@ export function FeatureImportance({
       {entries.map(([key, value]) => (
         <div key={key} className="flex items-center gap-2">
           <span className="w-36 shrink-0 text-[11px] text-muted">{LABELS[key] || key}</span>
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-800/80">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-base-raised">
             <div
               className="h-full rounded-full bg-sky-500/80"
               style={{ width: `${(value / max) * 100}%`, boxShadow: "0 0 6px rgba(56,189,248,0.4)" }}
