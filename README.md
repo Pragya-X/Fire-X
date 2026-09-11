@@ -1,182 +1,435 @@
-# FIRE-X
+﻿<div align="center">
 
-**AI-Based Detection and Classification of Industrial Fires and Persistent Thermal Sources Using NASA FIRMS, OSM & Satellite Data**
+# 🔥 FIRE-X
 
-SIH 2026 project brief: PS **26162**, NTRO · Software · Disaster Management.
+### AI-Based Detection & Classification of Industrial Fires and Persistent Thermal Sources
 
-**Current status: DATA BLOCKED — `training_ready=false`.** The software can prepare and review observations. Representative India data, industrial and land-cover references, and independently reviewed labels are still missing. There is no validated India classifier or measured project-model performance. 
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat&logo=typescript&logoColor=white)](https://typescriptlang.org)
 
-## Problem and proposed solution
+**Smart India Hackathon 2026 · PS-26162 · NTRO · Disaster Management**
 
-A NASA FIRMS thermal detection gives a location and measurements, not a confirmed cause. It could reflect a fire, agricultural burning, a furnace or a flare. FIRE-X brings the observation, nearby infrastructure and earlier activity together so a reviewer can assess the likely source and supporting evidence.
+*NASA FIRMS + OpenStreetMap + Land Cover + Satellite Imagery to detect, classify and monitor fire events across India*
 
-The prototype supports evidence review and dataset preparation. It is not a certified emergency-response system. “36-hour hackathon MVP architecture” describes the submission scope, not the age or authorship of the code.
+</div>
 
-## How it works
+---
 
-```mermaid
-flowchart LR
-  FIRMS[FIRMS exports] --> Clean[Validate and preserve provenance]
-  Clean --> Events[Cluster candidate events]
-  GIS[Industrial and land-cover references] --> Features[Spatial, thermal and earlier-history features]
-  Events --> Features
-  Features --> Store[(Event records: SQLite locally / PostGIS deployment)]
-  Store <--> API[FastAPI: evidence decisions, review, reports]
-  API <--> UI[Next.js GIS dashboard]
-  UI --> Labels[Independent label review]
-  Features --> Gate{Readiness and split checks}
-  Labels --> Gate
-  Gate -->|Missing evidence| Blocked[Blocked report]
-  Gate -->|Pass only| Training[Offline training and evaluation]
+## 📌 Problem Statement
+
+Satellite thermal detections from NASA FIRMS provide location and thermal measurements — but **not confirmed fire causes**. A single detection could be:
+
+- 🏭 An industrial furnace or gas flare
+- 🌾 Agricultural burning  
+- 🌲 A wildfire
+- 🔥 An industrial accident
+
+FIRE-X brings together raw observations, nearby infrastructure data, historical activity, and AI-based classification so analysts can assess the likely source with supporting evidence — and take informed action.
+
+---
+
+## ✨ Features
+
+### 🖥️ Command Center Dashboard
+- **Live interactive map** — hotspot markers color-coded by risk level (CRITICAL/HIGH/ELEVATED/MODERATE/LOW)
+- **KPI stat cards** — active hotspots, critical events, industrial fires, wildfires, agricultural burns, persistent sources
+- **Auto-refresh** every 60 s + manual FIRMS sync button
+- **Live event feed** with SSE-powered real-time notifications
+- **Hotspot detail panel** — click any map point for instant intelligence
+
+### 🔥 Hotspot Intelligence
+- Filterable table with 12+ dimensions (classification, risk, state, district, confidence, date range, proximity to industry/forest/agriculture/settlement)
+- **Per-hotspot dossier**: risk gauge, confidence gauge, spatial context (10 infrastructure proximities), 14-day detection timeline, AI explanation with feature importance
+- Export in **CSV / JSON / GeoJSON / PDF**
+- Per-hotspot incident PDF report generation
+
+### 📊 Analytics
+- Recharts visualizations: daily detection trend, classification pie chart, risk bar chart, top industrial zones, recurring hotspots
+- 14-day and 30-day trend analysis
+
+### 📅 Incident History (`/historical`)
+- **Overview** — 30-day timeline bar chart, KPI cards, classification & risk breakdown
+- **Records** — filterable archive table + geographic state-wise breakdown  
+- **Recurring** — card grid with risk strips, persistence score bars, location, temporal pattern
+- **Map Playback** — animated 14-day map with play/pause/scrub slider
+
+### 🏭 Industrial Zones
+- Zone intelligence with nearby hotspot history and incident correlation
+- Zone-specific PDF reports
+
+### 🤖 AI Intelligence
+- Thermal event evidence review and annotation workflow
+- SHAP-based explanations and FRP anomaly detection
+- Gemini-powered AI Copilot for natural language queries
+
+### 🛰️ Satellite Validation
+- Satellite evidence cross-referencing and validation status tracking
+
+### 🔔 Alerts System
+- Configurable risk threshold alerts (default: risk ≥ 80)
+- Alert lifecycle: open → acknowledged → escalated → resolved
+- Real-time notifications via SSE + SMTP email
+
+### 📋 Reports
+- Daily hotspot summary PDF
+- Per-hotspot incident PDF
+- Zone intelligence PDF
+
+### ⚙️ Data Ingestion
+- NASA FIRMS live API sync (auto-scheduled every 15 minutes)
+- OSM infrastructure, land cover data ingestion
+- Demo data seeding, manual risk recalculation
+
+### 👤 User Management
+- JWT auth with role-based access (`admin`, `analyst`, `field`, `viewer`)
+- Admin panel for user CRUD, audit activity log
+
+---
+
+## 🏗️ Architecture
+
+```
+NASA FIRMS API ──► Ingest & Validate ──► Cluster Events ──► Feature Extraction
+                                                                      │
+OSM / Land Cover ─────────────────────────────────────────────────────┘
+                                                                      │
+                                                               SQLite / PostGIS
+                                                                      │
+                                                               FastAPI Backend
+                                                              ╱      │      ╲
+                                               Next.js     SSE    Reports  Alerts
+                                              Dashboard   Stream    PDF     Email
 ```
 
-Individual detections are grouped using spatial **and** temporal proximity. Connected observations may form long chains, so clusters remain candidate events. Historical features use observations strictly before event start. Missing reference coverage stays unknown.
+### Component Map
 
-## Source architecture in two minutes
-
-| Responsibility | Open this file first |
+| Layer | Key Files |
 |---|---|
-| Load, normalize, validate and archive FIRMS | [preprocessing.py](backend/app/ml/data/preprocessing.py) |
-| Distances, CRS and geometry context | [engine.py](backend/app/gis/engine.py); [spatial_features.py](backend/app/ml/spatial_features.py) adds event features |
-| Group detections, enrich events and save artifacts | [build_dataset.py](backend/app/ml/build_dataset.py) |
-| Decide, explain and load only approved event models | [event_intelligence.py](backend/app/services/event_intelligence.py) |
-| Database sessions and table initialization | [database.py](backend/app/database.py); ORM tables remain in `models.py` and `event_models.py` |
-| HTTP registration and event review | [main.py](backend/app/main.py); [thermal_events.py](backend/app/routers/thermal_events.py) |
-| Map, filters, evidence and annotation form | [event workspace](frontend/app/(app)/event-workspace/page.tsx) |
+| Data Ingestion | `routers/ingest.py`, `services/firms_scheduler.py` |
+| GIS Engine | `gis/engine.py`, `ml/spatial_features.py` |
+| ML Pipeline | `ml/build_dataset.py`, `ml/training.py` |
+| AI Classification | `services/event_intelligence.py`, `services/classification_service.py` |
+| Risk Engine | `services/risk_engine.py` |
+| Temporal Analysis | `services/temporal.py` |
+| Report Service | `services/report_service.py` |
+| Notification / SSE | `services/notification_service.py`, `services/sse.py` |
+| API Layer | `main.py`, `routers/` |
+| Frontend | `frontend/app/`, `frontend/components/` |
 
-The existing filenames preserve useful CLI contracts. One giant `routes.py` or `classifier.py` would mix authentication, demo behavior and scientific review. [Architecture](docs/ARCHITECTURE.md) explains the retained boundaries.
+---
 
-## AI / classification logic
+## 🛠️ Tech Stack
 
-The reviewed-event path uses **evidence rules** until an operator approves a model against the existing real-data gate. Without sufficient evidence it returns `Unknown`, unavailable confidence and an explanation. Persistence and FRP anomaly indicators are descriptive heuristics, not calibrated probabilities. The separate legacy hotspot dashboard uses heuristic classifications and risk scores.
+### Backend
+| Technology | Use |
+|---|---|
+| Python 3.12 + FastAPI | REST API, OpenAPI docs |
+| SQLAlchemy | ORM (SQLite dev / PostGIS prod) |
+| Pydantic v2 | Validation + settings |
+| scikit-learn | HistGradientBoostingClassifier |
+| pandas / NumPy / PyArrow | Data processing |
+| Shapely / PyProj | Geospatial computation |
+| ReportLab | PDF generation |
+| uvicorn | ASGI server |
 
-Offline training uses **scikit-learn's HistGradientBoostingClassifier** — a histogram-based gradient boosting architecture optimized for speed and memory efficiency over traditional Random Forest (which runs heavy iterative tree loops). Optional XGBoost/LightGBM/CatBoost boosters are evaluated when installed. Evaluation and optional SHAP/anomaly tooling exist, but have no representative project evaluation. No model was trained during this refactor. Legacy demo artifacts cannot replace reviewed event models.
+### Frontend
+| Technology | Use |
+|---|---|
+| Next.js 14 + React 18 | App Router framework |
+| TypeScript 5.6 | Type safety |
+| Tailwind CSS 3.4 | Dark-mode UI |
+| MapLibre GL 4.7 | Interactive GIS maps |
+| Recharts 2.13 | Charts / data viz |
+| Google Gemini AI | AI Copilot |
 
-## Data sources and separation
+---
 
-- **NASA FIRMS:** original CSV/Parquet, WGS84 coordinates, UTC acquisition times, sensor metadata and native confidence.
-- **Industry/land cover:** sourced GeoJSON derivatives, stable identities, documented CRS, validity dates and actual coverage. Raw raster interpretation is not implemented.
-- **Labels:** real event IDs, source evidence, reviewer identity and independent approval. Proximity or recurrence alone is not a label.
+## 📁 Project Structure
 
-`data/incoming/` is the documented real-data inbox; `data/input/firms/india/` is also supported through explicit CLI paths. `data/raw/` preserves originals, while `data/processed/` and `data/ml/` hold derived artifacts. `data/samples/` contains the published NASA tutorial excerpt, which is outside India. Synthetic dashboard examples belong to a separate demo database; never reuse that database for real-data work.
-
-See [data sources](docs/DATASETS.md) and the [exact input checklist](docs/REAL_DATA_INPUT_CHECKLIST.md). No input folders or existing artifacts were moved in this refactor.
-
-<a id="repository-structure"></a>
-
-## Tech stack and project structure
-
-Python/FastAPI, Pydantic, SQLAlchemy; pandas/Parquet, Shapely/PyProj, scikit-learn; Next.js/React, TypeScript, Tailwind, MapLibre and Recharts. SQLite supports local development. Docker/PostGIS definitions exist but have not been runtime-verified here.
-
-```text
-backend/app/
-  main.py, config.py, database.py, models.py, event_models.py
-  ml/data/preprocessing.py     FIRMS loading and validation
-  ml/build_dataset.py          Clustering and feature assembly
-  ml/                         Schemas, reference checks, review gates and offline tools
-  gis/engine.py               Spatial calculations
-  services/event_intelligence.py  Event inference and explanations
-  services/                   Working alerts, reports, history and authentication helpers
-  providers/                  Live/file adapters and explicit demo modes
-  routers/                    Event review, context, analytics and supporting APIs
-backend/tests/                Detailed regression tests
-backend/migrations/           Preserved PostGIS migration
-frontend/app/                 Pages and layouts
-frontend/components/          Maps, evidence panels and shared controls
-frontend/lib/                 API client, types and authentication
-frontend/tests/e2e/           Browser checks
-scripts/                     Saved-evidence reporting helper
-data/                        Real-input instructions, templates and separate tutorial sample
-docs/                        Architecture, data, demo and developer guides
-docs/archive/                Historical engineering reports
+```
+Fire-X/
+├── backend/
+│   ├── app/
+│   │   ├── main.py                   # FastAPI app, router registration
+│   │   ├── config.py                 # All env settings (Pydantic)
+│   │   ├── models.py                 # ORM models (hotspots, zones, alerts…)
+│   │   ├── gis/engine.py             # Spatial distance calculations
+│   │   ├── ml/
+│   │   │   ├── training.py           # Gated offline training CLI
+│   │   │   ├── build_dataset.py      # Clustering + feature assembly
+│   │   │   └── data/preprocessing.py # FIRMS loading, validation
+│   │   ├── routers/                  # HTTP route handlers (15 modules)
+│   │   └── services/                 # Business logic (12 services)
+│   └── tests/                        # pytest test suite
+├── frontend/
+│   ├── app/(app)/
+│   │   ├── page.tsx                  # Dashboard + live map
+│   │   ├── hotspots/                 # Detection table + dossier
+│   │   ├── historical/               # Incident History (4-tab)
+│   │   ├── analytics/                # Charts and trends
+│   │   ├── alerts/                   # Alert queue
+│   │   ├── industrial-zones/         # Zone intelligence
+│   │   ├── event-workspace/          # Evidence annotation
+│   │   ├── ai-intelligence/          # AI results
+│   │   ├── satellite-validation/     # Satellite evidence
+│   │   ├── reports/                  # PDF generation
+│   │   ├── ingestion/                # Ingest controls
+│   │   ├── system-health/            # Status monitor
+│   │   ├── profile/                  # User profile + audit log
+│   │   └── admin/                    # Admin panel
+│   ├── components/
+│   │   ├── layout/                   # AppShell, Sidebar, Topbar
+│   │   ├── map/map-view.tsx          # MapLibre GL map
+│   │   ├── ui/primitives.tsx         # Design system components
+│   │   ├── data-table.tsx            # Sortable paginated table
+│   │   ├── gauges.tsx                # SVG risk/confidence gauges
+│   │   └── ai-chat-panel.tsx         # Floating AI assistant
+│   └── lib/
+│       ├── api.ts                    # Typed API client (60+ endpoints)
+│       ├── types.ts                  # TypeScript interfaces
+│       └── auth.tsx                  # Auth context + JWT
+├── ml/models/                        # Approved model artifacts
+├── data/                             # FIRMS inbox, archives, ML datasets
+├── docs/                             # Architecture, API, deployment guides
+├── docker-compose.yml                # Local dev
+├── docker-compose.production.yml     # Production (PostGIS)
+└── README.md
 ```
 
-## API
+---
 
-There are **61 operations in non-demo mode**, plus four explicit demo operations. Main paths include:
+## 🚀 Getting Started
 
-| Path | Purpose |
-|---|---|
-| `GET /api/v1/health` | Basic service check |
-| `GET /api/v1/thermal-events` | Filter imported events |
-| `GET /api/v1/thermal-events/{event_id}` | Event observations and evidence |
-| `POST /api/v1/thermal-events/{event_id}/analyze` | Event decision and explanation |
-| `GET /api/v1/infrastructure` | Stored facility context |
-| `GET /api/v1/analytics` | Legacy dashboard statistics |
+### Prerequisites
+- Python 3.12+
+- Node.js 20+
 
-The [complete API reference](docs/API.md) records roles and behavior. Runtime schemas are at `/docs` and `/openapi.json`. No HTTP endpoint trains models.
+### 1. Clone
+```bash
+git clone https://github.com/Pragya-X/Fire-X.git
+cd Fire-X
+```
 
-## Running locally
-
-Use Python 3.12 and Node.js 20. From the repository root:
-
-```sh
-python3.12 -m venv .venv
-source .venv/bin/activate
+### 2. Backend
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r backend/requirements-dev.txt
 cp backend/.env.example backend/.env
-cp frontend/.env.local.example frontend/.env.local
+```
+
+### 3. Frontend
+```bash
 cd frontend
 npm ci
+cp .env.local.example .env.local
 cd ..
 ```
 
-Copy environment examples only when those local files do not already exist. Backend configuration comes from `backend/.env` through `app/config.py`; frontend public settings use `frontend/.env.local`.
+### 4. Run
 
-Backend terminal:
-
-```sh
+**Terminal 1 — Backend:**
+```bash
 source .venv/bin/activate
 cd backend
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Frontend terminal:
-
-```sh
+**Terminal 2 — Frontend:**
+```bash
 cd frontend
 npm run dev
 ```
 
-Open [the dashboard](http://localhost:3000) and [API docs](http://localhost:8000/docs). For a built frontend, use `npm run build` then `npm start`; the start script supports the configured standalone output.
+- Dashboard → **http://localhost:3000**
+- API docs → **http://localhost:8000/docs**
 
-## Demo mode and walkthrough
+---
 
-The local example enables `DEMO_MODE=true` and seeds demonstration records on first startup. Its local-only account is `npgearly@gmail.com` / `admin123`. The explicit seed command resets demo tables; never point it at a database you want to retain.
+## 🐳 Docker
 
-With `DEMO_MODE=false`, demo routes and controls are unavailable. For real-data work, start with a separate empty database, `ML_MODE=rules` and no `EVENT_MODEL_PATH`; create an account using `python -m app.create_admin`. Restart after changing mode.
+```bash
+# Local demo
+docker compose up --build
 
-The walkthrough is: open the map → inspect source status → filter/select an event → inspect observations, infrastructure, land cover and earlier activity → read the decision/explanation → record an honest review. Missing India observations and reference coverage must remain visible. See [the demo guide](docs/SIH_DEMO_GUIDE.md).
+# Production (PostGIS)
+docker compose -f docker-compose.production.yml up --build
+```
 
-![Event review using the published NASA tutorial excerpt](docs/screenshots/event-workspace.png)
+---
 
-Actual browser-test capture from a disposable tutorial database. The annotation is an `Unknown` draft and external map tiles are disabled. It demonstrates the interface, not India coverage or model accuracy.
+## 🔐 Demo Credentials
 
-## Testing
+| Email | Password | Role |
+|---|---|---|
+| `npgearly@gmail.com` | `admin123` | Admin |
 
-```sh
-# Repository root, with the virtual environment active
+> ⚠️ Demo data is seeded automatically on first startup with `DEMO_MODE=true`. Never use the demo database for real data analysis.
+
+To create a real admin:
+```bash
+python -m app.create_admin
+```
+
+---
+
+## ⚙️ Environment Variables
+
+### Backend (`backend/.env`)
+
+| Variable | Default | Description |
+|---|---|---|
+| `DATABASE_URL` | `sqlite:///./firex.db` | SQLite (dev) or PostgreSQL URL |
+| `JWT_SECRET` | *(change me)* | Signing secret (32+ chars in prod) |
+| `DEMO_MODE` | `true` | Enable demo data and routes |
+| `ENV` | `development` | `development` or `production` |
+| `FIRMS_API_KEY` | *(optional)* | NASA FIRMS API key |
+| `FIRMS_AUTO_SYNC` | `true` | Background auto-sync |
+| `FIRMS_SYNC_INTERVAL` | `900` | Sync interval in seconds |
+| `AUTO_ALERT_RISK_THRESHOLD` | `80` | Min risk score for auto-alert |
+| `CORS_ORIGINS` | `*` | CORS origins (explicit HTTPS in prod) |
+| `ML_MODE` | `rules` | `rules`, `demo`, or `trained` |
+| `EVENT_MODEL_PATH` | *(optional)* | Approved model artifact path |
+| `SMTP_HOST/USER/PASSWORD` | *(optional)* | Email alert config |
+| `OPENAI_API_KEY` | *(optional)* | AI copilot key |
+
+### Frontend (`frontend/.env.local`)
+
+| Variable | Default | Description |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Backend API URL |
+
+---
+
+## 📡 API Reference
+
+| Domain | Base Path |
+|---|---|
+| Auth | `/api/v1/auth` |
+| Hotspots | `/api/v1/hotspots` |
+| Analytics + Historical | `/api/v1/analytics`, `/api/v1/historical` |
+| Alerts + Notifications | `/api/v1/alerts` |
+| Industrial Zones | `/api/v1/industrial-zones` |
+| Thermal Events | `/api/v1/thermal-events` |
+| Ingest | `/api/v1/ingest` |
+| Reports | `/api/v1/reports` |
+| ML Classify | `/api/v1/ml` |
+| System Health | `/api/v1/system-health` |
+| SSE Stream | `/api/v1/events/stream` |
+| Activity Log | `/api/v1/activity` |
+| AI Copilot | `/api/v1/copilot` |
+
+Full docs: **http://localhost:8000/docs**
+
+---
+
+## 🤖 ML Pipeline
+
+```
+FIRMS Data → Validate → Cluster Events → Spatial Features
+                                               │
+                              GIS References (industrial, land-cover)
+                                               │
+                          Evidence Labels (independent review required)
+                                               │
+                                    Readiness Gate Check
+                                               │
+                     Gated Training (HistGradientBoosting + optional XGBoost/LightGBM)
+                                               │
+                              Evaluation → Operator Approval → Production
+```
+
+**Classification features:** brightness, FRP, persistence score, historical frequency, 10 proximity distances, land cover code, satellite score, time of day.
+
+**Current status:** `training_ready=false` — representative India data and reviewed labels are required. Running in `rules` mode until approved model is supplied.
+
+---
+
+## 🧪 Testing
+
+```bash
+# Backend
 python -m pytest backend/tests -q
 
-# Frontend directory
-npm run typecheck
-npm run build
+# Frontend type check
+cd frontend && npm run typecheck
+
+# E2E (Playwright)
+cd frontend
 npx playwright install chromium
 npm run test:e2e
 ```
 
-Tests isolate databases, uploads, model paths and the email outbox. Browser checks use temporary servers on ports 3101 and 8101. Detailed groups and limits are in the [developer guide](docs/DEVELOPER_GUIDE.md). Typechecking/build do not replace security or accessibility review; build linting is currently skipped.
+---
 
-## Current data / training status and limitations
+## 📸 All Dashboard Pages
 
-**Models trained for this project: none. Training remains blocked.** India observations, industrial/land-cover reference coverage and reviewed labels are missing. Readiness thresholds and scientific review requirements are unchanged.
+| Page | URL |
+|---|---|
+| Dashboard + Live Map | `/` |
+| Hotspot Intelligence | `/hotspots` |
+| Hotspot Dossier | `/hotspots/[id]` |
+| Incident History | `/historical` |
+| Analytics | `/analytics` |
+| AI Intelligence | `/ai-intelligence` |
+| Event Workspace | `/event-workspace` |
+| Industrial Zones | `/industrial-zones` |
+| Alerts | `/alerts` |
+| Satellite Validation | `/satellite-validation` |
+| Reports | `/reports` |
+| Data Ingestion | `/ingestion` |
+| System Health | `/system-health` |
+| Profile | `/profile` |
+| Admin Panel | `/admin` |
 
-Implemented software includes validation, event construction, reference enrichment, independent annotation review and offline readiness checks. Satellite evidence currently supplies catalog metadata; automated pixel confirmation is future work. Optional learned tooling is unvalidated. Some legacy read APIs remain public. Docker/PostGIS, multi-worker operation, load/recovery and public-deployment security need separate verification.
+---
 
-## Future scope and team
+## 🗺️ Roadmap
 
-Acquire and review real data, then evaluate simple models and their errors. Consider calibration, geographic transfer and imagery evidence only with adequate data. Distributed queues, microservices and multimodal research are not required for the MVP. See the [roadmap](docs/ROADMAP.md).
+- [x] NASA FIRMS ingestion with automatic scheduling
+- [x] Risk scoring and multi-class classification
+- [x] Interactive GIS map with real-time markers
+- [x] Incident History dashboard with playback
+- [x] AI Copilot assistant (Gemini)
+- [x] PDF report generation
+- [x] SSE real-time notifications
+- [x] Evidence annotation workflow
+- [ ] Representative India dataset + validated classifier
+- [ ] Satellite imagery pixel confirmation
+- [ ] Calibrated confidence with geographic transfer
+- [ ] Production PostGIS multi-worker validation
+- [ ] Mobile field officer interface
 
-A verified team roster has not been supplied. Git history records actual contributions; this refactor does not reconstruct a 36-hour development history or assign fictional roles. No project license has been selected; dependencies and datasets retain their respective terms.
+---
 
-[Documentation index](docs/README.md) · [Historical reports](docs/archive/README.md) · [Refactor evidence and merge map](docs/archive/MVP_REFACTOR.md)
+## 📄 Documentation
+
+| Document | Description |
+|---|---|
+| [Architecture](docs/ARCHITECTURE.md) | System design and component boundaries |
+| [API Reference](docs/API.md) | All endpoints, roles, behavior |
+| [Datasets](docs/DATASETS.md) | Data sources and provenance requirements |
+| [Developer Guide](docs/DEVELOPER_GUIDE.md) | Dev setup, test groups, debugging |
+| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Docker, production config, PostGIS |
+| [ML Pipeline](docs/REVIEWED_ML_PIPELINE.md) | Training and evaluation process |
+| [India Data Readiness](docs/INDIA_DATA_READINESS.md) | Real data requirements |
+| [SIH Demo Guide](docs/SIH_DEMO_GUIDE.md) | Hackathon walkthrough |
+| [Roadmap](docs/ROADMAP.md) | Technical debt and acceptance criteria |
+
+---
+
+## ⚠️ Important
+
+> This is an **evidence review and dataset preparation prototype**, not a certified emergency-response system. No model trained on representative India data exists yet. Demo data must never be treated as real fire events.
+
+---
+
+<div align="center">
+
+**FIRE-X · National Fire Intelligence Grid · SIH 2026**
+
+*AI · GIS · Real-time · Evidence-based*
+
+</div>
