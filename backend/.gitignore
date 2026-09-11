@@ -1,4 +1,6 @@
 venv/
 firex.db
+firex.db-shm
+firex.db-wal
 __pycache__/
 *.pyc
