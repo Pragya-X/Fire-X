@@ -171,11 +171,11 @@ export const ToastContext = React.createContext<{ push: (t: Omit<ToastItem, "id"
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-  const push = (t: Omit<ToastItem, "id">) => {
+  const push = React.useCallback((t: Omit<ToastItem, "id">) => {
     const id = Date.now() + Math.random();
     setToasts((prev) => [...prev, { ...t, id }]);
     setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== id)), 5000);
-  };
+  }, []);
   const toneClass: Record<ToastItem["tone"], string> = {
     info: "border-blue-300",
     success: "border-green-300",
