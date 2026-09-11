@@ -89,8 +89,10 @@ class Settings(BaseSettings):
                 problems.append("explicit HTTPS CORS origins are required")
             if not self.is_postgres:
                 problems.append("PostgreSQL/PostGIS is required")
-            if self.GOOGLE_CLIENT_ID or self.GOOGLE_CLIENT_SECRET:
-                problems.append("Google OAuth is disabled in production pending state/PKCE and token transport hardening")
+            if bool(self.GOOGLE_CLIENT_ID) != bool(self.GOOGLE_CLIENT_SECRET):
+                problems.append("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set together")
+            if (self.GOOGLE_CLIENT_ID and self.GOOGLE_CLIENT_SECRET) and not self.GOOGLE_REDIRECT_URI.startswith("https://"):
+                problems.append("GOOGLE_REDIRECT_URI must be an https:// URL in production")
             if problems:
                 raise ValueError("Unsafe production configuration: " + "; ".join(problems))
         return self

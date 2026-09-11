@@ -28,20 +28,28 @@ export default function LoginPage() {
     if (user) router.replace("/");
   }, [user, router]);
 
-  // Handle Google OAuth callback token: persist it AND update the auth context,
-  // otherwise AppShell still sees user === null and bounces us back out.
+  // Handle Google OAuth callback: the backend redirects back with a one-time
+  // code (never a raw token). Redeem it for a session, then clean the URL.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (!token) return;
-    // Strip the token from the address bar before doing anything else.
+    const code = params.get("code");
+    if (!code) return;
+    // Strip the code from the address bar before doing anything else.
     window.history.replaceState({}, "", "/login");
     setOauthBusy(true);
-    loginWithToken(token)
+    fetch(`${API_URL}/api/v1/auth/google/exchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || "Exchange failed");
+        return res.json();
+      })
+      .then((data) => loginWithToken(data.access_token))
       .then(() => router.replace("/"))
       .catch(() => {
-        setToken(null);
-        setError("Google sign-in failed. Please try again.");
+        setError("Google sign-in failed or the link expired. Please try again.");
       })
       .finally(() => setOauthBusy(false));
   }, [loginWithToken, router]);
@@ -64,7 +72,7 @@ export default function LoginPage() {
     setGoogleLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/api/v1/auth/google/login`);
+      const res = await fetch(`${API_URL}/api/v1/auth/google/login`, { credentials: "include" });
       const data = await res.json();
       if (data.configured && data.authorize_url) {
         window.location.href = data.authorize_url;

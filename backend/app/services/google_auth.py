@@ -11,7 +11,10 @@ When credentials are absent the endpoints are inert (``configured: false`` /
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import secrets
+import time
 from urllib.parse import urlencode
 
 import httpx
@@ -34,7 +37,40 @@ def google_configured() -> bool:
     return bool(settings.GOOGLE_CLIENT_ID.strip() and settings.GOOGLE_CLIENT_SECRET.strip())
 
 
-def build_authorize_url(state: str) -> str:
+# ---- PKCE + CSRF state store -------------------------------------------------
+# Pending authorizations live in-process for five minutes. The production
+# deployment runs a single uvicorn worker; if the backend is ever scaled to
+# multiple workers this must move to a shared store (e.g. the database).
+_OAUTH_STATE_TTL = 300
+_pending_states: dict[str, tuple[str, float]] = {}
+
+
+def _pkce_pair() -> tuple[str, str]:
+    """Return (verifier, challenge) using the S256 method."""
+    verifier = secrets.token_urlsafe(64)
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    challenge = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+    return verifier, challenge
+
+
+def issue_authorization() -> tuple[str, str]:
+    """Create a signed-off (state, authorize_url) pair with PKCE bound in.
+
+    The verifier is kept server-side only; Google receives the matching
+    S256 challenge and must echo the state back on the callback.
+    """
+    # Bound memory usage: drop the oldest entries past a sane ceiling.
+    while len(_pending_states) >= 1000:
+        oldest = min(_pending_states, key=lambda s: _pending_states[s][1])
+        _pending_states.pop(oldest, None)
+    now = time.monotonic()
+    for s in [s for s, (_, t) in _pending_states.items() if now - t > _OAUTH_STATE_TTL]:
+        _pending_states.pop(s, None)
+
+    state = secrets.token_urlsafe(32)
+    verifier, challenge = _pkce_pair()
+    _pending_states[state] = (verifier, now)
+
     params = {
         "client_id": settings.GOOGLE_CLIENT_ID,
         "redirect_uri": settings.google_redirect_uri,
@@ -42,13 +78,28 @@ def build_authorize_url(state: str) -> str:
         "scope": GOOGLE_SCOPES,
         "access_type": "online",
         "state": state,
+        "code_challenge": challenge,
+        "code_challenge_method": "S256",
         "prompt": "select_account",
     }
-    return f"{GOOGLE_AUTH_URL}?{urlencode(params)}"
+    return state, f"{GOOGLE_AUTH_URL}?{urlencode(params)}"
 
 
-def fetch_userinfo(code: str) -> dict:
-    """Exchange the authorization code for an access token and fetch the profile."""
+def consume_state(state: str | None) -> str | None:
+    """Return the PKCE verifier for a valid, unexpired state (single use)."""
+    if not state:
+        return None
+    entry = _pending_states.pop(state, None)
+    if entry is None:
+        return None
+    verifier, created = entry
+    if time.monotonic() - created > _OAUTH_STATE_TTL:
+        return None
+    return verifier
+
+
+def fetch_userinfo(code: str, code_verifier: str) -> dict:
+    """Exchange the authorization code (PKCE-bound) and fetch the profile."""
     with httpx.Client(timeout=15) as client:
         token_resp = client.post(
             GOOGLE_TOKEN_URL,
@@ -58,6 +109,7 @@ def fetch_userinfo(code: str) -> dict:
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
                 "redirect_uri": settings.google_redirect_uri,
                 "grant_type": "authorization_code",
+                "code_verifier": code_verifier,
             },
         )
         token_resp.raise_for_status()

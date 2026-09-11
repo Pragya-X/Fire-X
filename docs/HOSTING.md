@@ -112,7 +112,11 @@ columns, SRID 4326, GiST indexes), open **Supabase → SQL Editor** and run
   redeploy/restart. Everything of record lives in Postgres, so this only affects uploaded
   report attachments and local cache files.
 - **Supabase free**: 500 MB, project pauses after ~7 days with zero queries — the ping above prevents both.
-- **Google OAuth is disabled in production** by the config guard (pending PKCE hardening). Email+password only.
+- **Google OAuth works in production** with the hardened flow (PKCE + verified state + one-time
+  exchange handoff; no tokens in URLs). Requirements: set `GOOGLE_CLIENT_ID`,
+  `GOOGLE_CLIENT_SECRET` and an `https://` `GOOGLE_REDIRECT_URI`
+  (e.g. `https://backend-est3.onrender.com/api/v1/auth/google/callback`), and add that exact
+  redirect URI in the Google Cloud Console OAuth client. Email+password always works too.
 
 ## Updating deployments after code changes
 

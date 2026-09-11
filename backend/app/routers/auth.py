@@ -6,8 +6,10 @@ import hmac
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import time
+
 import jwt
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -27,13 +29,40 @@ from app.schemas import (
 )
 from app.services import mailer
 from app.services.google_auth import (
-    build_authorize_url,
+    consume_state,
     fetch_userinfo,
     google_configured,
+    issue_authorization,
     upsert_google_user,
 )
 
 RESET_TOKEN_MINUTES = 30
+
+# ---- One-time exchange handoff ------------------------------------------------
+# The OAuth callback no longer puts the session JWT in the redirect URL (it
+# leaks into browser history and referrers). Instead the callback stores a
+# short-lived single-use code server-side; the frontend redeems it for a JWT.
+_EXCHANGE_TTL_SECONDS = 120
+_token_exchanges: dict[str, tuple[int, float]] = {}
+
+
+def _store_exchange(user_id: int) -> str:
+    now = time.monotonic()
+    for c in [c for c, (_, t) in _token_exchanges.items() if now - t > _EXCHANGE_TTL_SECONDS]:
+        _token_exchanges.pop(c, None)
+    code = secrets.token_urlsafe(32)
+    _token_exchanges[code] = (user_id, now)
+    return code
+
+
+def _redeem_exchange(code: str) -> int | None:
+    entry = _token_exchanges.pop(code, None)
+    if entry is None:
+        return None
+    user_id, created = entry
+    if time.monotonic() - created > _EXCHANGE_TTL_SECONDS:
+        return None
+    return user_id
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -89,8 +118,8 @@ def me(user: User = Depends(get_current_user)):
 
 
 @router.get("/google/login")
-def google_login():
-    """Start Google sign-in.
+def google_login(response: Response):
+    """Start Google sign-in (PKCE + CSRF state bound to an HttpOnly cookie).
 
     When credentials are configured, returns the Google consent URL and the
     frontend redirects the browser there. Without credentials it returns
@@ -102,32 +131,72 @@ def google_login():
             "authorize_url": None,
             "message": "Google SSO is not configured on this server - demo Google sign-in is available instead.",
         }
+    state, authorize_url = issue_authorization()
+    response.set_cookie(
+        key="firex_oauth_state",
+        value=state,
+        max_age=600,
+        httponly=True,
+        secure=settings.ENV == "production",
+        samesite="none" if settings.ENV == "production" else "lax",
+        path="/api/v1/auth",
+    )
     return {
         "configured": True,
-        "authorize_url": build_authorize_url(secrets.token_urlsafe(16)),
+        "authorize_url": authorize_url,
         "message": "",
     }
 
 
 @router.get("/google/callback")
-def google_callback(code: str, state: Optional[str] = None, db: Session = Depends(get_db)):
-    """OAuth callback: exchange the code, upsert the user and redirect back to the frontend with a JWT."""
+def google_callback(
+    request: Request,
+    code: str,
+    state: Optional[str] = None,
+    error: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """OAuth callback: verify state, exchange the code (PKCE-bound), hand off a one-time code."""
+    if error:
+        raise HTTPException(status_code=400, detail=f"Google sign-in cancelled: {error}")
     if not google_configured():
         raise HTTPException(status_code=400, detail="Google SSO is not configured on this server")
+    verifier = consume_state(state)
+    cookie_state = request.cookies.get("firex_oauth_state")
+    if verifier is None or not cookie_state or not state or not hmac.compare_digest(state, cookie_state):
+        raise HTTPException(status_code=400, detail="Invalid or expired sign-in state - please try again")
     try:
-        info = fetch_userinfo(code)
+        info = fetch_userinfo(code, verifier)
     except Exception as exc:  # network / provider errors
         raise HTTPException(status_code=502, detail=f"Google sign-in failed: {exc}")
     email = info.get("email")
     if not email:
         raise HTTPException(status_code=400, detail="Google account has no verified email")
     user = upsert_google_user(db, email, info.get("name") or email.split("@")[0])
-    token = create_access_token(user)
     db.add(ActivityLog(user=user.email, action="login", entity="auth", details={"provider": "google", "role": user.role}))
     db.commit()
-    # Token is passed via query param for the SPA flow; acceptable for this deployment.
-    redirect_url = f"{settings.FRONTEND_URL.rstrip('/')}/login?token={token}"
-    return RedirectResponse(url=redirect_url, status_code=302)
+
+    exchange_code = _store_exchange(user.id)
+    redirect_url = f"{settings.FRONTEND_URL.rstrip('/')}/login?code={exchange_code}"
+    response = RedirectResponse(url=redirect_url, status_code=302)
+    response.delete_cookie("firex_oauth_state", path="/api/v1/auth")
+    return response
+
+
+class GoogleExchangeRequest(BaseModel):
+    code: str
+
+
+@router.post("/google/exchange", response_model=LoginResponse)
+def google_exchange(body: GoogleExchangeRequest, db: Session = Depends(get_db)):
+    """Redeem the one-time callback code for a session (single use, 2 min TTL)."""
+    user_id = _redeem_exchange(body.code.strip())
+    if user_id is None:
+        raise HTTPException(status_code=400, detail="Sign-in link expired or already used - please sign in again")
+    user = db.get(User, user_id)
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=400, detail="Account unavailable")
+    return LoginResponse(access_token=create_access_token(user), user=UserOut.model_validate(user))
 
 
 @router.post("/change-password")

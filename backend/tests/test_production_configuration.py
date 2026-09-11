@@ -18,9 +18,16 @@ def test_production_valid_explicit_config():
     assert production().ENV=='production'
 
 @pytest.mark.parametrize('overrides',[{'CORS_ORIGINS':'*'},{'DEMO_MODE':True},{'DEBUG':True},{'JWT_SECRET':'short'},
-    {'DATABASE_URL':'sqlite:///test.db'},{'GOOGLE_CLIENT_ID':'not-hardened'}])
+    {'DATABASE_URL':'sqlite:///test.db'},{'GOOGLE_CLIENT_ID':'id-without-secret'},
+    {'GOOGLE_CLIENT_ID':'id','GOOGLE_CLIENT_SECRET':'secret','GOOGLE_REDIRECT_URI':'http://localhost:8000/api/v1/auth/google/callback'}])
 def test_production_guards(overrides):
     with pytest.raises(ValueError):production(**overrides)
+
+
+def test_production_allows_hardened_google_oauth():
+    s = production(GOOGLE_CLIENT_ID='id', GOOGLE_CLIENT_SECRET='secret',
+                   GOOGLE_REDIRECT_URI='https://firex.example.com/api/v1/auth/google/callback')
+    assert s.ENV == 'production'
 
 
 @pytest.mark.parametrize("demo,key", [(False, ""), (False, "test-key"), (True, "test-key")])
