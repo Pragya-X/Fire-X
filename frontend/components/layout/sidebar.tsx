@@ -23,7 +23,7 @@ const TOOLS_NAV = [
   { href: "/hotspots", label: "Hotspot records", icon: Flame },
   { href: "/industrial-zones", label: "Industrial zones", icon: Building2 },
   { href: "/alerts", label: "Alerts", icon: Bell },
-  { href: "/historical", label: "Historical records", icon: History },
+  { href: "/historical", label: "Incident History", icon: History },
   { href: "/ingestion", label: "Data ingestion", icon: Database },
   { href: "/satellite-validation", label: "Satellite evidence", icon: Satellite },
   { href: "/system-health", label: "System status", icon: ShieldCheck },

@@ -118,7 +118,7 @@ export default function HotspotIntelligencePage() {
         ].map((x) => (
           <Card key={x.l} className="px-3 py-2.5">
             <p className="text-[9px] uppercase tracking-wider text-muted/70">{x.l}</p>
-            <p className="mt-0.5 truncate text-xs font-semibold text-muted/30">{x.v}</p>
+            <p className="mt-0.5 truncate text-xs font-semibold text-primary">{x.v}</p>
           </Card>
         ))}
       </div>
@@ -158,7 +158,7 @@ export default function HotspotIntelligencePage() {
                 ].map((x) => (
                   <div key={x.l} className="flex items-center justify-between rounded border border-base-border/40 bg-base-raised/30 px-2.5 py-1.5">
                     <span className="text-[11px] text-muted/70">{x.l}</span>
-                    <span className="font-mono text-[11px] font-semibold text-muted/30">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
+                    <span className="font-mono text-[11px] font-semibold text-primary">{x.v >= 0 ? `${fmt(x.v)} km` : "n/a"}</span>
                   </div>
                 ))}
               </div>
