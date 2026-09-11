@@ -1,69 +1,237 @@
-# FIRE-X project report
+﻿# FIRE-X — Project Report
 
-## Problem statement
+**Smart India Hackathon 2026 · PS-26162 · NTRO · Disaster Management**
+**Prepared:** September 2026
 
-Satellite thermal detections are useful for finding unusual heat, but they do not identify its cause on their own. A furnace or gas flare can look like a recurring hotspot, while vegetation and crop fires may occur close to industrial sites. A reviewer needs location, history and independent evidence before deciding what happened.
+---
 
-FIRE-X explores this problem for an India-focused Smart India Hackathon project. It is a working review and dataset-preparation prototype. A representative India training dataset has not yet been supplied.
+## Problem Statement
+
+Satellite thermal detections from NASA FIRMS provide location and thermal measurements — but not a confirmed cause. A single detection could be an industrial furnace, a gas flare, agricultural burning, a wildfire, or an industrial accident. These sources require different responses, but a raw detection alone cannot distinguish them.
+
+FIRE-X addresses this gap for India-focused fire monitoring. It ingests raw FIRMS data, enriches it with industrial infrastructure, land-cover, and historical context, applies AI-based classification with explainability, and presents the evidence to analysts through a real-time command center dashboard. The platform also supports evidence-based annotation and leakage-safe dataset preparation for future model training.
+
+---
 
 ## Objectives
- 
-- Preserve and validate original FIRMS observations.
-- Group related detections into candidate events.
-- Add industrial, land-cover and historical context without inventing missing values.
-- Support evidence-based labels and independent review.
-- Prepare leakage-safe datasets for later model comparison.
-- Display observations, explanations and reports in an understandable dashboard.
 
-## Technology stack
+1. Ingest and validate original NASA FIRMS observations, preserving source provenance.
+2. Group related detections into candidate events using spatial and temporal proximity.
+3. Enrich events with industrial infrastructure, land-cover, and historical context.
+4. Classify thermal sources using rule-based heuristics and, when data permits, trained ML models.
+5. Score and prioritize events by risk level to direct analyst attention.
+6. Deliver real-time intelligence via an interactive GIS dashboard with live map, charts, and notifications.
+7. Support evidence-based annotation, independent label review, and leakage-safe training data preparation.
+8. Produce structured reports (PDF) for incident documentation and zone monitoring.
 
-Python, FastAPI, SQLAlchemy and SQLite support local development. PostgreSQL/PostGIS configuration and a migration are included for deployment work. Pandas, NumPy, PyArrow, Shapely and pyproj handle data and spatial processing. Scikit-learn provides the core experiment tooling. Next.js, React, TypeScript, MapLibre and Recharts provide the dashboard. Pytest and Playwright cover backend and browser behavior.
+---
 
-## Architecture
+## Technology Stack
 
-The system has one backend, one frontend and one database. Offline Python commands prepare data and run gated experiments. [Architecture](docs/ARCHITECTURE.md) contains the diagram and reasons for the main design choices.
+### Backend
+| Component | Technology |
+|---|---|
+| API Framework | Python 3.12 + FastAPI |
+| Database | SQLAlchemy ORM · SQLite (dev) · PostgreSQL + PostGIS (production) |
+| Data Processing | pandas, NumPy, PyArrow, Shapely, pyproj |
+| Machine Learning | scikit-learn (HistGradientBoostingClassifier), optional XGBoost/LightGBM |
+| Explainability | SHAP (optional), rule-based factor extraction |
+| PDF Reports | ReportLab |
+| Background Tasks | APScheduler (FIRMS auto-sync every 15 minutes) |
+| Real-time | Server-Sent Events (SSE) |
+| Email Alerts | SMTP (Gmail app password compatible) |
+| Auth | JWT (HS256), Google OAuth (optional), bcrypt hashing |
 
-The legacy demo store is kept separate from imported thermal events. This preserves working demonstrations while preventing seeded records from being treated as reviewed training observations.
+### Frontend
+| Component | Technology |
+|---|---|
+| Framework | Next.js 14 + React 18 + TypeScript 5.6 |
+| Styling | Tailwind CSS 3.4 (dark theme, glassmorphism) |
+| Maps | MapLibre GL 4.7 (interactive GIS, clustered markers) |
+| Charts | Recharts 2.13 (area, bar, pie, line charts) |
+| AI Copilot | Google Gemini AI (@google/generative-ai) |
+| Testing | Playwright 1.63 (E2E), TypeScript type checking |
 
-## Dataset
+---
 
-The repository includes a small published NASA tutorial excerpt for ingestion testing. It is not representative India data. The original demo generator also remains for interface tests, clearly separated from the scientific workflow.
+## System Architecture
 
-Required inputs are representative India FIRMS exports, industrial facilities and polygons, land cover, administrative references, supporting water/transport context, and independently reviewed event labels. Source versions, CRS, timestamp coverage, licenses and evidence must be documented. See [required inputs](docs/REAL_DATA_INPUT_CHECKLIST.md).
+The system comprises a single FastAPI backend, a Next.js frontend, and one database (SQLite locally, PostGIS in production). A background scheduler handles automatic FIRMS data synchronization. An SSE endpoint pushes live events to connected dashboards.
+
+```
+NASA FIRMS API ──► Ingest & Validate ──► Feature Extraction ──► DB (SQLite / PostGIS)
+OSM / Overpass ──►                              │                         │
+Land Cover     ──►                     Risk & Classification          FastAPI API
+                                               │                     ╱    │    ╲
+                                        Alert Engine           Map    Reports  SSE
+                                               │             (Next.js Dashboard)
+                                        Email / Notify
+```
+
+The demo data store is kept strictly separate from imported thermal events and reviewed annotations, preventing seeded records from contaminating the scientific workflow.
+
+---
+
+## Implemented Features
+
+### Command Center Dashboard
+- Live interactive map (MapLibre GL) with hotspot markers color-coded by risk level (CRITICAL, HIGH, ELEVATED, MODERATE, LOW)
+- KPI stat cards: active hotspots, critical events, industrial fires, wildfires, agricultural burns, persistent heat sources
+- Dashboard auto-refreshes every 60 seconds; manual FIRMS sync available
+- Live event feed powered by SSE with instant toast notifications on new alerts
+- Clickable map hotspot detail panel with classification, risk, location, and detection time
+
+### Hotspot Intelligence (`/hotspots`)
+- Filterable, sortable, paginated detection table with 12+ filter dimensions:
+  classification, risk level, confidence, state, district, date range, and proximity to industrial/forest/agricultural/settlement areas
+- Full per-hotspot dossier page (`/hotspots/[id]`) with:
+  - Risk gauge (SVG) and confidence gauge
+  - Detection stat bar (satellite, brightness, FRP, persistence score, temporal pattern, land cover, status)
+  - Spatial context table: distances to 10 infrastructure types (refinery, factory, power plant, mine, forest, agricultural area, settlement, road, railway, pipeline)
+  - 14-day detection timeline visualization
+  - AI explanation panel: model-derived factors, feature importance bars, contextual rule-based factors, reasoning narrative
+- Export in CSV, JSON, GeoJSON, and PDF formats
+- Per-hotspot incident PDF report generation
+
+### Incident History (`/historical`) — *Rebuilt*
+Previously a basic filtered table with a simple playback view. Now a four-tab intelligence dashboard:
+
+| Tab | Contents |
+|---|---|
+| **Overview** | KPI cards (30-day total, daily average, peak day, recurring count) · 30-day animated bar chart timeline · classification breakdown · risk level breakdown · recent critical incidents list |
+| **Records** | Fully filtered historical table (date, state, classification, risk) · geographic state-wise breakdown bar chart |
+| **Recurring** | Card grid of all recurring/persistent hotspots with risk-colored side strips, persistence score bars, location, temporal pattern badges |
+| **Map Playback** | Animated 14-day map with play/pause/scrub slider · per-day detection stat cards · recurring hotspot panel |
+
+### Analytics (`/analytics`)
+- Recharts-powered charts: daily detection trend (area), classification distribution (pie), risk breakdown (bar), top industrial zones, top recurring hotspots, alert status
+- Summary KPI row: avg classification confidence, avg risk score, open alerts, top zone risk level
+
+### Industrial Zones (`/industrial-zones`)
+- Zone list with nearby hotspot counts and risk level indicators
+- Per-zone intelligence detail with historical detection counts, proximity hotspots, and zone-specific PDF reports
+
+### AI Intelligence & Event Workspace
+- Thermal event review and annotation workflow for scientific label preparation
+- Evidence-based decision engine: returns `Unknown` without sufficient evidence
+- SHAP-based explanations (when model and data are available)
+- FRP anomaly detection and persistence scoring (descriptive heuristics)
+- Gemini-powered AI Copilot for natural language queries about fire events and data
+
+### Satellite Validation (`/satellite-validation`)
+- Satellite evidence cross-referencing per hotspot
+- Validation status tracking (catalog metadata; pixel confirmation is future work)
+
+### Alerts System (`/alerts`)
+- Auto-generated alerts when risk score exceeds configurable threshold (default: ≥ 80)
+- Full alert lifecycle: open → acknowledged → escalated → resolved
+- SSE-powered real-time notification delivery
+- SMTP email dispatch for critical events
+- Notification center in topbar with unread badge count
+
+### Reports (`/reports`)
+- Daily hotspot summary PDF
+- Per-hotspot incident PDF reports
+- Zone intelligence PDF reports
+- All generated using ReportLab with live data
+
+### Data Ingestion (`/ingestion`)
+- NASA FIRMS live API ingestion (manual trigger + auto-scheduled every 15 minutes via APScheduler)
+- OSM infrastructure data ingestion via Overpass API
+- Land cover data ingestion
+- Demo scenario runner for interface demonstrations
+- Manual refresh analysis and risk recalculation
+- Activity log showing all ingestion events
+
+### User Management & Auth
+- JWT-based authentication (HS256, 12-hour sessions)
+- Role system: `admin`, `analyst`, `field`, `viewer`
+- Admin panel (`/admin`) for full user CRUD
+- Password change, forgot password, reset password email flows
+- Google OAuth integration (optional)
+- Audit activity log per user
+
+### System Health (`/system-health`)
+- Live service status: database, FIRMS scheduler, ML model, demo mode
+- API version and uptime indicators
+
+---
 
 ## Methodology
 
-1. Archive source observations and record hashes.
-2. Validate coordinates, UTC timestamps, duplicates and thermal fields.
-3. Cluster detections using spatial and temporal proximity.
-4. Compute spatial context and history strictly before each event.
-5. Inspect clustering and evidence; save labels through independent review.
-6. Prepare facility/location groups and temporal splits with the existing purge.
-7. Run the readiness gate. Missing data or evidence blocks training.
-8. Once authorized and ready, compare Logistic Regression, HistGradientBoosting and required optional models using validation data. Reserve test data for the selected model.
+1. **Archive & validate** — Source FIRMS CSV/Parquet observations are hashed, timestamped, and preserved in `data/raw/`. Coordinate, UTC timestamp, duplicate, and thermal field validation runs before any processing.
+2. **Cluster events** — Spatial and temporal proximity clustering groups detections into candidate events. Long chains may form; these remain candidates, not confirmed events.
+3. **Feature extraction** — Per-event spatial features are computed from industrial, land-cover, and administrative references. Historical features use observations strictly before event start to prevent leakage.
+4. **Classification** — The system runs in rules-based mode (`ML_MODE=rules`) by default, returning evidence-based assessments. A trained `HistGradientBoostingClassifier` is used when an operator-approved model artifact is provided.
+5. **Risk scoring** — A deterministic risk engine computes a 0–100 score from thermal intensity, classification confidence, proximity to sensitive infrastructure, and persistence.
+6. **Alert generation** — Hotspots exceeding the risk threshold automatically generate alerts and dispatch SSE/email notifications.
+7. **Label review** — Independent annotators assess evidence in the Event Workspace and record labels with quality grades (A/B/C), confidence, and source references.
+8. **Gated training** — A readiness gate checks dataset completeness, SHA-256 integrity, leakage guards, and review coverage before allowing offline training. Missing data or evidence blocks training (`training_ready=false`).
 
-The evaluation code supports class-wise metrics, confusion matrices and calibration diagnostics. These are implementation capabilities, not results: no real project evaluation has been performed.
+---
+
+## Dashboard Pages
+
+| Page | URL | Description |
+|---|---|---|
+| Command Center | `/` | Live map, KPIs, event feed |
+| Hotspot Intelligence | `/hotspots` | Filtered detection table |
+| Hotspot Dossier | `/hotspots/[id]` | Full per-hotspot analysis |
+| Incident History | `/historical` | 30-day archive, recurring analysis, playback |
+| Analytics | `/analytics` | Charts and trend analysis |
+| AI Intelligence | `/ai-intelligence` | Thermal event classification results |
+| Event Workspace | `/event-workspace` | Evidence annotation workflow |
+| Industrial Zones | `/industrial-zones` | Zone proximity and risk |
+| Alerts | `/alerts` | Alert queue management |
+| Satellite Validation | `/satellite-validation` | Satellite evidence records |
+| Reports | `/reports` | PDF report generation |
+| Data Ingestion | `/ingestion` | Ingest controls + activity log |
+| System Health | `/system-health` | Service status monitor |
+| Profile | `/profile` | User settings + audit log |
+| Admin Panel | `/admin` | User management (admin only) |
+
+---
+
+## Testing and Validation
+
+**Backend (pytest):** API behavior, GIS distance calculations, temporal feature extraction, ingestion pipelines, review rules, leakage guards, activity logging, and blocked-training enforcement.
+
+**Frontend (Playwright):** End-to-end browser tests for auth flows, unavailable/empty states, draft annotation, and dashboard loading. TypeScript type checking runs across all 60+ API calls and component props.
+
+Test fixtures use isolated SQLite databases, mocked SMTP outboxes, and separate upload/model paths. Browser tests run on isolated ports (3101/8101).
+
+---
 
 ## Challenges
 
-The main challenge is obtaining defensible labels, especially for industrial accidents versus routine heat. Other challenges include incomplete facility mapping, mixed pixels, cloud/overpass gaps, event over-merging, seasonal sampling and leakage between repeated observations of the same facility.
+- **Label quality** — Obtaining defensible labels for industrial accidents vs. routine heat is the primary bottleneck. Proximity and recurrence alone are not valid labels.
+- **Reference coverage** — Incomplete facility mapping means some detections lack industrial context, leading to conservative `Unknown` decisions.
+- **Mixed pixels and cloud gaps** — Satellite overpass frequency and cloud cover create temporal gaps; persistence patterns can be disrupted.
+- **Two data model generations** — Legacy demo hotspots and reviewed thermal events coexist. Maintaining an explicit boundary is safer than merging them.
+- **Scalability** — SSE is currently process-local; PostGIS multi-worker production operation requires separate validation.
 
-The project also has two generations of data models. Keeping their boundary explicit is safer than combining them only to reduce file count. Native PostGIS behavior and real provider performance still need separate validation.
-
-## Testing and validation
-
-The backend tests check API behavior, GIS math, temporal features, ingestion, review rules, leakage guards and blocked training. Browser tests cover unavailable/empty states and a draft review through a disposable FastAPI database. Test fixtures are not scientific datasets.
-
-The [developer guide](docs/DEVELOPER_GUIDE.md) explains how to repeat checks. The [refactor review](docs/archive/PROJECT_REVIEW.md) records the checks actually run for this change. Historical audit notes are retained as dated evidence rather than rewritten as current achievements.
+---
 
 ## Limitations
 
-**`training_ready=false`.** Representative India observations, industrial and land-cover references, and reviewed labels are missing. There is no validated classifier, measured India accuracy, calibrated confidence or real-model SHAP result.
+- **`training_ready=false`** — No model trained on representative India FIRMS data exists. The platform runs in rules-based mode.
+- No validated India accuracy figures, calibrated confidence scores, or real-model SHAP results.
+- Satellite imagery pixel confirmation is catalog metadata only; automated pixel analysis is future work.
+- Google OAuth, multi-worker deployment, and load/recovery behavior require additional hardening before production use.
+- This is a **prototype for evidence review and dataset preparation**, not a certified emergency-response system.
 
-The event features describe completed events. Satellite imagery integration currently searches catalog metadata. Some legacy APIs are public, SSE is process-local, and deployment/dependency hardening remains outstanding. The software is not a certified emergency-response system.
+---
 
-## Future work
+## Future Work
 
-Acquire and review real data, assess coverage and taxonomy, then run approved model comparisons. After evaluation, investigate calibration, geographic transfer and useful explanations. Image analysis and learned anomaly experiments should follow only if the simpler approach leaves a demonstrated gap. Autonomous agents and multimodal research are not current deliverables.
+- Acquire and label representative India FIRMS observations with independent review
+- Run approved model comparisons (Logistic Regression baseline → HistGradientBoosting → optional boosters)
+- Implement calibrated confidence scoring and geographic transfer evaluation
+- Integrate satellite imagery pixel-level confirmation
+- Validate PostGIS multi-worker production deployment
+- Mobile-optimized interface for field officers
+- Distributed ingestion queue for high-volume national-scale deployment
 
-[Technical debt and roadmap](docs/ROADMAP.md) lists dependencies and acceptance evidence. No team size, elapsed development period, contribution split, SIH grade or commit history is asserted by this report.
+---
+
+*[Architecture](docs/ARCHITECTURE.md) · [API Reference](docs/API.md) · [ML Pipeline](docs/REVIEWED_ML_PIPELINE.md) · [Roadmap](docs/ROADMAP.md)*
