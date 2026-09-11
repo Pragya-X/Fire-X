@@ -38,15 +38,18 @@ export default function HomePage() {
 
   useEffect(() => {
     let isMounted = true;
-    // Auto-sync FIRMS data on each visit in the background
-    ingestFirms()
-      .catch((e) => console.error("Auto-sync failed:", e))
-      .finally(() => {
-        if (isMounted) load(); // Refresh data after sync completes
-      });
+
+    const sync = () =>
+      ingestFirms()
+        .catch((e) => console.error("Auto-sync failed:", e))
+        .finally(() => {
+          if (isMounted) load(); // Refresh UI after each sync completes
+        });
 
     load(); // Load immediately so UI isn't empty while syncing
-    const t = setInterval(load, 60000);
+    sync(); // Sync right away on visit
+    const t = setInterval(sync, 120000); // Sync FIRMS data every 2 minutes
+
     return () => {
       isMounted = false;
       clearInterval(t);
