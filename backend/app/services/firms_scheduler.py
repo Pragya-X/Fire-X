@@ -15,7 +15,7 @@ from app.config import settings
 
 logger = logging.getLogger("firex")
 
-INTERVAL_SECONDS = 120  # 2 minutes
+INTERVAL_SECONDS = max(120, settings.FIRMS_SYNC_INTERVAL)  # floor at 2 minutes
 _sync_lock = threading.Lock()
 _stop_event = threading.Event()
 _thread: threading.Thread | None = None

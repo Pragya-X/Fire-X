@@ -17,6 +17,15 @@ from app.services.report_service import build_daily_report, build_incident_repor
 
 router = APIRouter(prefix="/api/v1/hotspots", tags=["hotspots"])
 
+# The map polls geojson on every dashboard load. The payload only changes when
+# an ingest commits, so cache it briefly and invalidate from the ingest path.
+_GEOJSON_CACHE_TTL = 30.0
+_geojson_cache: dict = {"data": None, "at": 0.0}
+
+
+def invalidate_geojson_cache() -> None:
+    _geojson_cache["data"] = None
+
 RISK_COLORS = {
     "CRITICAL": "#ef4444",
     "HIGH": "#f97316",
@@ -146,6 +155,14 @@ def hotspots_geojson(
     state: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
+    # Filtered requests stay uncached; the unfiltered default map payload is cached.
+    if not classification and not risk and not state:
+        import time as _time
+
+        now = _time.monotonic()
+        if _geojson_cache["data"] is not None and now - _geojson_cache["at"] < _GEOJSON_CACHE_TTL:
+            return _geojson_cache["data"]
+
     q = db.query(Hotspot)
     q = _apply_filters(q, db, classification=classification, risk=risk, state=state)
     items = q.all()
@@ -173,7 +190,14 @@ def hotspots_geojson(
                 },
             }
         )
-    return {"type": "FeatureCollection", "features": features}
+    fc = {"type": "FeatureCollection", "features": features}
+
+    if not classification and not risk and not state:
+        _geojson_cache["data"] = fc
+        import time as _time
+
+        _geojson_cache["at"] = _time.monotonic()
+    return fc
 
 
 @router.get("/export")

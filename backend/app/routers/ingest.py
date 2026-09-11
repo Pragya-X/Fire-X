@@ -112,6 +112,10 @@ def _upsert_detections(db: Session, records: list[dict], source_tag: str) -> dic
             db.flush()  # keep Alert.count() accurate for the next iteration
             alerts_created += 1
     db.commit()
+    # The map geojson is cached; drop it so the next request sees fresh data.
+    from app.routers.hotspots import invalidate_geojson_cache
+
+    invalidate_geojson_cache()
     broadcast({"type": "ingest", "data": {"created": created, "updated": updated, "alerts": alerts_created}})
     return {"created": created, "updated": updated, "alerts_created": alerts_created}
 

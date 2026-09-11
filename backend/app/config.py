@@ -68,8 +68,11 @@ class Settings(BaseSettings):
     # Demo
     DEMO_MODE: bool = True
 
-    # Auto-sync: run the FIRMS ingest on a server-side 2-minute schedule.
+    # Auto-sync: run the FIRMS ingest on a server-side schedule. NASA FIRMS
+    # feeds refresh roughly hourly; 15 minutes keeps data fresh without
+    # hammering the database with write storms every 2 minutes.
     FIRMS_AUTO_SYNC: bool = True
+    FIRMS_SYNC_INTERVAL: int = 900  # seconds
 
     # Tuning
     AUTO_ALERT_RISK_THRESHOLD: int = 80
