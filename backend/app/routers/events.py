@@ -4,16 +4,24 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import ActivityLog
+from app.models import ActivityLog, User
 from app.services.sse import event_generator
 
 router = APIRouter(prefix="/api/v1")
 
 
 @router.get("/activity", response_model=dict, tags=["activity"])
-def list_activity(action: str | None = None, limit: int = 100, db: Session = Depends(get_db)):
+def list_activity(
+    action: str | None = None,
+    limit: int = 100,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     q = db.query(ActivityLog)
+    # Only show activity for the current logged-in user
+    q = q.filter(ActivityLog.user == current_user.email)
     if action:
         q = q.filter(ActivityLog.action == action)
     items = q.order_by(ActivityLog.created_at.desc()).limit(limit).all()

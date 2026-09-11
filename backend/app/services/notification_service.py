@@ -6,7 +6,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.models import Notification
+from app.models import Notification, User
 from app.services import mailer
 from app.services.sse import broadcast
 
@@ -42,7 +42,9 @@ def _notify_email(
     message: str,
     to: Optional[str] = None,
 ) -> dict:
-    recipients = settings.alert_recipients or ([to] if to else [])
+    # Handle comma-separated multiple recipients
+    recipients = [r.strip() for r in (to or "").split(",") if r.strip()] if to else (settings.alert_recipients or [])
+    recipients = list(dict.fromkeys(recipients))  # deduplicate
     if not recipients:
         return {
             "provider": "email",
@@ -64,6 +66,10 @@ def _notify_email(
 
 
 class NotificationService:
+    # Rate limit: minimum minutes between email sends to the same recipient
+    MIN_EMAIL_INTERVAL_MIN = 5
+    _last_email_time: dict[str, float] = {}
+
     def notify(
         self,
         db: Session,
@@ -96,11 +102,39 @@ class NotificationService:
                     )
                 )
             elif channel == "email":
-                sent.append(
-                    _notify_email(
-                        title=title, message=message, to=to,
-                    )
-                )
+                # Rate-limit emails: at most one per recipient per MIN_EMAIL_INTERVAL_MIN
+                import time
+                now = time.time()
+                if to:
+                    last = self._last_email_time.get(to, 0)
+                    if (now - last) < self.MIN_EMAIL_INTERVAL_MIN * 60:
+                        sent.append({"provider": "email", "delivered": False, "reason": "Rate-limited (min interval)", "to": to})
+                        continue
+                    self._last_email_time[to] = now
+                # Send to all active users with viewer/analyst/admin roles if no explicit recipient
+                recipients = []
+                if to:
+                    recipients = [to]
+                elif db and hasattr(self, "_broadcast_to_all") is False:
+                    # Only if explicitly called with broadcast; default stays targeted
+                    recipients = settings.alert_recipients or []
+                if not recipients and to is None and db:
+                    # Send to all users if no recipient set — for alerts that must reach everyone
+                    users = db.query(User).filter(User.role.in_(["viewer", "analyst", "admin", "field"])).all()
+                    recipients = [u.email for u in users if u.email]
+                if recipients:
+                    # Deduplicate and filter out empty
+                    recipients = list(dict.fromkeys([r for r in recipients if r]))
+                    if recipients:
+                        sent.append(
+                            _notify_email(
+                                title=title, message=message, to=",".join(recipients) if len(recipients) > 1 else recipients[0],
+                            )
+                        )
+                    else:
+                        sent.append({"provider": "email", "delivered": False, "reason": "No recipients", "to": None})
+                else:
+                    sent.append({"provider": "email", "delivered": False, "reason": "No recipient (set MAIL_ALERT_RECIPIENTS or pass the acting user's email)", "to": to})
             elif channel == "sms":
                 payload = dict(title=title, message=message, severity=severity, entity=entity, entity_id=entity_id,
                                provider="sms-stub", delivered=False, reason="No SMS provider configured")
