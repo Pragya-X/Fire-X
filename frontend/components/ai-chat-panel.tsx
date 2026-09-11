@@ -153,8 +153,8 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
 
   return (
     <div
-      className="flex w-[360px] flex-col overflow-hidden rounded-2xl border border-base-border bg-base-panel shadow-2xl"
-      style={{ maxHeight: "calc(100vh - 120px)" }}
+      className="fixed bottom-28 right-4 z-50 flex w-[360px] flex-col overflow-hidden rounded-2xl border border-base-border bg-base-panel shadow-2xl"
+      style={{ maxHeight: "calc(100vh - 160px)" }}
     >
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-base-border/60 px-4 py-3">
@@ -225,9 +225,9 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
         )}
 
         {error && (
-          <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-950/30 p-2.5">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-            <p className="text-xs text-red-400">{error}</p>
+          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-2.5">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+            <p className="text-xs text-red-700">{error}</p>
           </div>
         )}
 
@@ -237,7 +237,7 @@ export function AIChatPanel({ open, onClose }: { open: boolean; onClose: () => v
       {/* Input */}
       <div className="border-t border-base-border/60 p-3">
         {!apiKey && (
-          <p className="mb-2 text-center text-[10px] text-amber-400">
+          <p className="mb-2 text-center text-[10px] text-amber-600">
             Add NEXT_PUBLIC_GEMINI_API_KEY to .env.local to enable chat
           </p>
         )}

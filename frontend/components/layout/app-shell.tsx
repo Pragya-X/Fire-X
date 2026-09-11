@@ -16,13 +16,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  // Re-assert the persisted theme on mount (inline script in the root layout
-  // already applies it before first paint; this guards client-side navigation).
-  useEffect(() => {
-    const theme = localStorage.getItem("firex-theme") || "dark";
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, []);
-
   useEffect(() => {
     if (!loading && !user) router.replace("/landing");
   }, [loading, user, router]);
@@ -45,12 +38,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar onMenu={() => setSidebarOpen(true)} pathname={pathname} />
-        <main className="min-h-0 flex-1 overflow-y-auto p-4">{children}</main>
-        <SystemStatusBar />
+    // Portal layout: full-width header on top, sidebar starts below it.
+    <div className="flex h-screen flex-col overflow-hidden">
+      <Topbar onMenu={() => setSidebarOpen(true)} pathname={pathname} />
+
+      <div className="flex min-h-0 flex-1">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-5">{children}</main>
+          <SystemStatusBar />
+        </div>
       </div>
 
       {/* Floating AI chat button — visible on every page */}

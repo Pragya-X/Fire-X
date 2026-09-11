@@ -63,13 +63,13 @@ export function CardBody({ className, children }: { className?: string; children
 /* ---------------------------------- Badge ----------------------------------- */
 export type BadgeTone = "critical" | "high" | "moderate" | "low" | "info" | "muted" | "purple";
 const toneClass: Record<BadgeTone, string> = {
-  critical: "bg-red-50 text-red-700 border-red-300 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30",
-  high: "bg-orange-50 text-orange-700 border-orange-300 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30",
-  moderate: "bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30",
-  low: "bg-green-50 text-green-700 border-green-300 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30",
-  info: "bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30",
+  critical: "bg-red-50 text-red-700 border-red-300",
+  high: "bg-orange-50 text-orange-700 border-orange-300",
+  moderate: "bg-amber-50 text-amber-700 border-amber-300",
+  low: "bg-green-50 text-green-700 border-green-300",
+  info: "bg-blue-50 text-blue-700 border-blue-300",
   muted: "bg-base-panel text-muted border-base-border",
-  purple: "bg-purple-50 text-purple-700 border-purple-300 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/30",
+  purple: "bg-purple-50 text-purple-700 border-purple-300",
 };
 
 export function Badge({ tone = "muted", className, children, icon }: { tone?: BadgeTone; className?: string; children: React.ReactNode; icon?: React.ReactNode }) {
@@ -152,7 +152,7 @@ export function EmptyState({ title, message }: { title: string; message?: string
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-red-300 bg-red-50/50 py-10 text-center dark:border-red-500/30 dark:bg-red-500/5">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-red-300 bg-red-50/50 py-10 text-center">
       <p className="text-sm text-red-600">{message}</p>
       {onRetry && <Button variant="outline" size="sm" onClick={onRetry}>Retry</Button>}
     </div>
@@ -177,10 +177,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => setToasts((prev) => prev.filter((x) => x.id !== id)), 5000);
   }, []);
   const toneClass: Record<ToastItem["tone"], string> = {
-    info: "border-blue-300 dark:border-blue-500/40",
-    success: "border-green-300 dark:border-green-500/40",
-    error: "border-red-300 dark:border-red-500/40",
-    critical: "border-red-500 dark:border-red-500/60",
+    info: "border-blue-300",
+    success: "border-green-300",
+    error: "border-red-300",
+    critical: "border-red-500",
   };
   return (
     <ToastContext.Provider value={{ push }}>

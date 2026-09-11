@@ -8,17 +8,9 @@ export const metadata: Metadata = {
   description: "AI-enabled geospatial fire intelligence platform. Detect. Classify. Understand. Respond.",
 };
 
-// Applies the persisted theme before first paint so there is no white flash.
-const themeInitScript = `
-(function(){try{var t=localStorage.getItem("firex-theme")||"dark";document.documentElement.classList.toggle("dark",t==="dark");}catch(e){}})();
-`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
+    <html lang="en">
       <body>
         <AuthProvider>
           <ToastProvider>{children}</ToastProvider>

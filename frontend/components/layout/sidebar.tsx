@@ -71,16 +71,13 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
 
   const content = (
     <div className="flex h-full flex-col border-r border-base-border bg-base-panel">
-      {/* Logo */}
-      <div className="flex items-center justify-between border-b border-base-border px-4 py-4">
-        <Link href="/" className="flex items-center gap-3" onClick={onClose}>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent">
-            <Flame className="h-5 w-5 text-white" fill="white" strokeWidth={2.2} />
+      {/* Mobile-only brand row (desktop shows the brand in the topbar) */}
+      <div className="flex items-center justify-between border-b border-base-border px-4 py-3 lg:hidden">
+        <Link href="/" className="flex items-center gap-2.5" onClick={onClose}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent">
+            <Flame className="h-4 w-4 text-white" fill="currentColor" strokeWidth={2} />
           </div>
-          <div>
-            <span className="block text-sm font-bold tracking-widest text-white">FIRE-X</span>
-            <span className="block text-[9px] uppercase tracking-[0.25em] text-sky-400/70">Fire Intelligence</span>
-          </div>
+          <span className="text-sm font-bold tracking-widest text-primary">FIRE-X</span>
         </Link>
         <button
           className="rounded-lg p-1.5 text-muted transition-colors hover:bg-base-raised lg:hidden"
@@ -89,6 +86,14 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         >
           <X className="h-4 w-4" />
         </button>
+      </div>
+
+      {/* Portal context block */}
+      <div className="border-b border-base-border px-4 py-3">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Operations Portal</p>
+        <p className="mt-0.5 truncate text-[11px] text-muted">
+          {user ? `${user.name} · ${user.role}` : "Command Center"}
+        </p>
       </div>
 
       {/* Nav */}

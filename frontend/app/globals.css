@@ -3,27 +3,16 @@
 @tailwind utilities;
 
 /* ---------------------------------- Theme tokens ---------------------------------- */
-/* Light values are the root default; `.dark` on <html> switches every token.        */
+/* Light is the only theme; tokens stay variable-driven so components keep working.  */
 :root {
   --rgb-base: 255 255 255;
   --rgb-base-panel: 248 250 252;
   --rgb-base-raised: 241 245 249;
   --rgb-base-border: 226 232 240;
   --rgb-primary: 15 23 42;
-  --rgb-secondary: 71 85 105;
+  --rgb-secondary: 51 65 85;
   --rgb-muted: 100 116 139;
   color-scheme: light;
-}
-
-.dark {
-  --rgb-base: 0 0 0;
-  --rgb-base-panel: 10 10 11;
-  --rgb-base-raised: 22 22 24;
-  --rgb-base-border: 39 39 44;
-  --rgb-primary: 245 245 245;
-  --rgb-secondary: 212 212 216;
-  --rgb-muted: 161 161 170;
-  color-scheme: dark;
 }
 
 html,
@@ -37,25 +26,24 @@ body {
   @apply antialiased;
 }
 
-
 /* --------------------------- Scrollbars that follow theme -------------------------- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(var(--rgb-base-border)) transparent;
+  scrollbar-color: #cbd5e1 transparent;
 }
 *::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgb(var(--rgb-base-border));
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 /* ------------------------------ MapLibre overrides -------------------------------- */
 .maplibregl-ctrl-group {
   background: #ffffff !important;
-  border: 1px solid rgb(var(--rgb-base-border)) !important;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 4px !important;
   box-shadow: none !important;
 }
@@ -63,7 +51,7 @@ body {
   color: #334155;
 }
 .maplibregl-ctrl-group button:hover {
-  background: rgba(51, 65, 85, 0.1) !important;
+  background: rgba(51, 65, 85, 0.08) !important;
 }
 .maplibregl-ctrl-attrib {
   background: rgba(255, 255, 255, 0.8) !important;
@@ -75,39 +63,13 @@ body {
 }
 .maplibregl-popup-content {
   background: #ffffff !important;
-  border: 1px solid rgb(var(--rgb-base-border)) !important;
-  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
   color: #0f172a !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 .maplibregl-popup-tip {
   border-top-color: #ffffff !important;
-}
-
-.dark .maplibregl-ctrl-group {
-  background: #0a0a0b !important;
-  border-color: rgb(var(--rgb-base-border)) !important;
-}
-.dark .maplibregl-ctrl-group button {
-  color: #cbd5e1;
-}
-.dark .maplibregl-ctrl-group button:hover {
-  background: rgba(51, 65, 85, 0.6) !important;
-}
-.dark .maplibregl-ctrl-attrib {
-  background: rgba(9, 14, 26, 0.7) !important;
-  color: #64748b !important;
-}
-.dark .maplibregl-ctrl-attrib a {
-  color: #94a3b8 !important;
-}
-.dark .maplibregl-popup-content {
-  background: #0a0a0b !important;
-  color: #e4e4e7 !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
-}
-.dark .maplibregl-popup-tip {
-  border-top-color: #0a0a0b !important;
 }
 
 /* ---------------------- Critical MapLibre GL canvas styles ------------------------ */

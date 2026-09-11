@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-const DARK_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
+const LIGHT_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
 const SATELLITE_TILES =
   process.env.NEXT_PUBLIC_SATELLITE_TILE_URL ||
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -127,7 +127,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
   const selectedRef = useRef(selectedId);
   selectedRef.current = selectedId;
 
-  const [basemap, setBasemap] = useState<"dark" | "satellite">("dark");
+  const [basemap, setBasemap] = useState<"light" | "satellite">("light");
   const [visible, setVisible] = useState<Record<LayerId, boolean>>(DEFAULT_VISIBLE);
   const [ready, setReady] = useState(false);
   const [infra, setInfra] = useState<GeoJson | null>(null);
@@ -152,7 +152,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
         version: 8,
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: {
-          basemap: { type: "raster", tiles: [DARK_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
+          basemap: { type: "raster", tiles: [LIGHT_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
           satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© Esri" },
         },
         layers: [
@@ -178,31 +178,71 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
       map.fitBounds(INDIA_BOUNDS, { padding: 24, duration: 0 });
     });
 
+    // Query with a small padded bbox so small dots and touch taps register.
+    const HOTSPOT_HIT_LAYERS = ["hotspot-circle", "hotspot-cluster"];
+    const pickHotspot = (point: { x: number; y: number }) => {
+      const layers = HOTSPOT_HIT_LAYERS.filter((l) => map.getLayer(l));
+      if (!layers.length) return [];
+      const bbox: [[number, number], [number, number]] = [
+        [point.x - 8, point.y - 8],
+        [point.x + 8, point.y + 8],
+      ];
+      return map.queryRenderedFeatures(bbox, { layers });
+    };
+
     map.on("click", (e) => {
-      const feats = map.getLayer("hotspot-circle") ? map.queryRenderedFeatures(e.point, { layers: ["hotspot-circle"] }) : [];
-      if (feats.length && onSelect) {
-        const p = feats[0].properties as Record<string, unknown>;
-        onSelect(Number(p.id), String(p.code));
+      const feats = pickHotspot(e.point);
+      const f = feats[0];
+      if (!f) return;
+      const p = f.properties as Record<string, unknown>;
+      const coords = (f.geometry as unknown as { coordinates: [number, number] }).coordinates;
+
+      if (p.point_count) {
+        // Cluster: expand it so individual hotspots become visible.
+        const source = map.getSource("hotspots") as maplibregl.GeoJSONSource | undefined;
+        if (!source) return;
+        source
+          .getClusterExpansionZoom(Number(p.cluster_id))
+          .then((zoom) => map.easeTo({ center: coords, zoom: Math.min(zoom + 0.2, 14), duration: 600 }))
+          .catch(() => undefined);
+        return;
       }
+
+      if (onSelect) onSelect(Number(p.id), String(p.code));
+      // Nudge the camera so the selected dot sits left of the detail panel.
+      map.easeTo({
+        center: coords,
+        zoom: Math.max(map.getZoom(), 8),
+        offset: window.innerWidth >= 1024 ? [-150, 0] : [0, 0],
+        duration: 600,
+      });
     });
-    map.on("mouseenter", "hotspot-circle", () => (map.getCanvas().style.cursor = "pointer"));
-    map.on("mouseleave", "hotspot-circle", () => (map.getCanvas().style.cursor = ""));
+    HOTSPOT_HIT_LAYERS.forEach((layer) => {
+      map.on("mouseenter", layer, () => (map.getCanvas().style.cursor = "pointer"));
+      map.on("mouseleave", layer, () => (map.getCanvas().style.cursor = ""));
+    });
 
     let popup: maplibregl.Popup | null = null;
     map.on("mousemove", (e) => {
-      const feats = map.getLayer("hotspot-circle") ? map.queryRenderedFeatures(e.point, { layers: ["hotspot-circle"] }) : [];
+      const feats = pickHotspot(e.point);
       if (!feats.length) {
         popup?.remove();
         popup = null;
         return;
       }
       const p = feats[0].properties as Record<string, unknown>;
-      const html = `<div style="min-width:170px">
-        <div style="font-weight:700;color:#334155">${escapeHtml(p.code)}</div>
-        <div style="color:${RISK_COLORS[String(p.risk_level)] || "#94a3b8"}">${escapeHtml(p.risk_level)} · risk ${Math.round(Number(p.risk_score))}/100</div>
-        <div style="color:#94a3b8;font-size:11px">${escapeHtml(p.classification)}</div>
-        <div style="color:#64748b;font-size:11px">FRP ${Number(p.frp).toFixed(1)} MW · ${escapeHtml(p.state)}</div>
-      </div>`;
+      // Colors reference theme CSS variables so the popup works in light and dark mode.
+      const html = p.point_count
+        ? `<div style="min-width:150px;color:rgb(var(--rgb-primary))">
+            <div style="font-weight:700">${p.point_count} hotspots</div>
+            <div style="color:rgb(var(--rgb-muted));font-size:11px">Click to zoom in and expand</div>
+          </div>`
+        : `<div style="min-width:170px;color:rgb(var(--rgb-primary))">
+            <div style="font-weight:700">${escapeHtml(p.code)}</div>
+            <div style="font-weight:600;color:${RISK_COLORS[String(p.risk_level)] || "rgb(var(--rgb-muted))"}">${escapeHtml(p.risk_level)} · risk ${Math.round(Number(p.risk_score ?? 0))}/100</div>
+            <div style="color:rgb(var(--rgb-secondary));font-size:11px">${escapeHtml(p.classification)}</div>
+            <div style="color:rgb(var(--rgb-muted));font-size:11px">FRP ${Number(p.frp ?? 0).toFixed(1)} MW · ${escapeHtml(p.state)}</div>
+          </div>`;
       if (!popup) popup = new maplibregl.Popup({ closeButton: false, offset: 12, maxWidth: "240px" }).addTo(map);
       popup.setLngLat(e.lngLat).setHTML(html);
     });
@@ -218,7 +258,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
-    map.setLayoutProperty("basemap-layer", "visibility", basemap === "dark" ? "visible" : "none");
+    map.setLayoutProperty("basemap-layer", "visibility", basemap === "light" ? "visible" : "none");
     map.setLayoutProperty("satellite-layer", "visibility", basemap === "satellite" ? "visible" : "none");
   }, [basemap, ready]);
 

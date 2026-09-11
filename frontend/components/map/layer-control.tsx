@@ -28,8 +28,8 @@ export function LayerControl({
 }: {
   visible: Record<LayerId, boolean>;
   onChange: (v: Record<LayerId, boolean>) => void;
-  basemap: "dark" | "satellite";
-  onBasemap: (b: "dark" | "satellite") => void;
+  basemap: "light" | "satellite";
+  onBasemap: (b: "light" | "satellite") => void;
 }) {
   const ids = Object.keys(visible) as LayerId[];
   return (
@@ -40,16 +40,16 @@ export function LayerControl({
         </span>
         <div className="flex overflow-hidden rounded border border-base-border">
           <button
-            onClick={() => onBasemap("dark")}
-            aria-label="Dark basemap"
-            className={cn("flex items-center gap-1 px-1.5 py-1 text-[10px]", basemap === "dark" ? "bg-sky-600/70 text-primary" : "text-muted hover:text-primary")}
+            onClick={() => onBasemap("light")}
+            aria-label="Light basemap"
+            className={cn("flex items-center gap-1 px-1.5 py-1 text-[10px]", basemap === "light" ? "bg-accent text-white" : "text-muted hover:text-primary")}
           >
-            <MapIcon className="h-3 w-3" /> Dark
+            <MapIcon className="h-3 w-3" /> Map
           </button>
           <button
             onClick={() => onBasemap("satellite")}
             aria-label="Satellite basemap"
-            className={cn("flex items-center gap-1 px-1.5 py-1 text-[10px]", basemap === "satellite" ? "bg-sky-600/70 text-primary" : "text-muted hover:text-primary")}
+            className={cn("flex items-center gap-1 px-1.5 py-1 text-[10px]", basemap === "satellite" ? "bg-accent text-white" : "text-muted hover:text-primary")}
           >
             <Satellite className="h-3 w-3" /> Sat
           </button>
