@@ -163,7 +163,7 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
           {STATS.map((s, i) => (
             <div key={i} className="text-center">
-              <s.icon className="mx-auto mb-2 h-5 w-5 text-sky-400/60" />
+              <s.icon className="mx-auto mb-2 h-5 w-5 text-sky-400/60" fill="currentColor" />
               <p className="text-2xl font-bold text-white">{s.value}</p>
               <p className="text-[10px] uppercase tracking-wider text-slate-500">{s.label}</p>
             </div>
@@ -197,7 +197,7 @@ export default function LandingPage() {
                   className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
                   style={{ background: `${f.color}15`, boxShadow: `0 0 20px ${f.color}10` }}
                 >
-                  <f.icon className="h-5 w-5" style={{ color: f.color }} />
+                  <f.icon className="h-5 w-5" style={{ color: f.color }} fill={f.color} />
                 </div>
                 <h3 className="mb-2 text-[15px] font-bold text-white">{f.title}</h3>
                 <p className="text-[13px] leading-relaxed text-slate-400">{f.desc}</p>

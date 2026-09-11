@@ -78,7 +78,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             className="flex h-9 w-9 items-center justify-center rounded-xl"
             style={{ background: "linear-gradient(135deg, #0284c7 0%, #7c3aed 100%)", boxShadow: "0 0 16px rgba(2,132,199,0.35)" }}
           >
-            <Flame className="h-5 w-5 text-white" strokeWidth={2.2} />
+            <Flame className="h-5 w-5 text-white" fill="white" strokeWidth={2.2} />
           </div>
           <div>
             <span className="block text-sm font-bold tracking-widest text-white">FIRE-X</span>

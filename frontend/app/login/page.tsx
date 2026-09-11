@@ -95,7 +95,7 @@ export default function LoginPage() {
         {/* Top logo */}
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%)", boxShadow: "0 0 30px rgba(14,165,233,0.3)" }}>
-            <Flame className="h-6 w-6 text-white" strokeWidth={2.2} />
+            <Flame className="h-6 w-6 text-white" fill="white" strokeWidth={2.2} />
           </div>
           <div>
             <span className="text-lg font-bold tracking-[0.2em] text-white">FIRE-X</span>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                 className="group rounded-xl border border-white/[0.06] p-3 transition-all duration-300 hover:border-sky-500/20 hover:bg-white/[0.02]"
                 style={{ backdropFilter: "blur(8px)" }}
               >
-                <f.icon className="mb-2 h-4 w-4 text-sky-400 transition-transform group-hover:scale-110" />
+                <f.icon className="mb-2 h-4 w-4 text-sky-400 transition-transform group-hover:scale-110" fill="currentColor" />
                 <p className="text-[12px] font-semibold text-slate-200">{f.label}</p>
                 <p className="text-[10px] text-slate-500">{f.desc}</p>
               </div>
@@ -171,7 +171,7 @@ export default function LoginPage() {
           {/* Mobile logo (hidden on desktop) */}
           <div className="mb-8 text-center lg:hidden">
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%)", boxShadow: "0 0 30px rgba(14,165,233,0.3)" }}>
-              <Flame className="h-7 w-7 text-white" strokeWidth={2.2} />
+              <Flame className="h-7 w-7 text-white" fill="white" strokeWidth={2.2} />
             </div>
             <h1 className="text-xl font-bold tracking-[0.2em] text-white">FIRE-X</h1>
             <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-sky-400/70">AI Fire Intelligence</p>

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TrendingUp, Flame, Mountain, Radar, Sprout, Thermometer, TriangleAlert } from "lucide-react";
-import { getHotspotsGeojson, getHotspotStats, getSystemHealth } from "@/lib/api";
+import { getHotspotsGeojson, getHotspotStats, getSystemHealth, ingestFirms } from "@/lib/api";
 import type { GeoJson, HotspotStats, ScenarioResult } from "@/lib/types";
 import { StatCard } from "@/components/stat-card";
 import { Card, ErrorState, Skeleton } from "@/components/ui/primitives";
@@ -37,9 +37,20 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    load();
+    let isMounted = true;
+    // Auto-sync FIRMS data on each visit in the background
+    ingestFirms()
+      .catch((e) => console.error("Auto-sync failed:", e))
+      .finally(() => {
+        if (isMounted) load(); // Refresh data after sync completes
+      });
+
+    load(); // Load immediately so UI isn't empty while syncing
     const t = setInterval(load, 60000);
-    return () => clearInterval(t);
+    return () => {
+      isMounted = false;
+      clearInterval(t);
+    };
   }, [load]);
 
   const handleScenarioStep = useCallback((phase: number, res: ScenarioResult) => {
