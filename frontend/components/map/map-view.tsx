@@ -156,8 +156,8 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
           satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© CartoDB" },
         },
         layers: [
-          { id: "satellite-layer", type: "raster", source: "satellite", layout: { visibility: "none" } },
-          { id: "basemap-layer", type: "raster", source: "basemap" },
+          { id: "satellite-layer", type: "raster", source: "satellite", layout: { visibility: "visible" } },
+          { id: "basemap-layer", type: "raster", source: "basemap", layout: { visibility: "none" } },
         ],
       },
       center: [78.96, 22.35],
