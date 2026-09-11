@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 const LIGHT_TILES = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=cb1_328h_1_73d0124bd69f096f2afe7cb4";
+// Esri World Imagery (free, no key). Note Esri tile scheme is {z}/{y}/{x}, not {z}/{x}/{y}.
 const SATELLITE_TILES =
   process.env.NEXT_PUBLIC_SATELLITE_TILE_URL ||
-  "https://basemaps.cartocdn.com/rastertiles/satellite/{z}/{x}/{y}.png";
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
 const INDIA_BOUNDS: [[number, number], [number, number]] = [
   [66.5, 6.5],
@@ -153,7 +154,7 @@ export function MapView({ hotspots, selectedId, onSelect, focus, className }: Ma
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
         sources: {
           basemap: { type: "raster", tiles: [LIGHT_TILES], tileSize: 256, attribution: "© CARTO © OpenStreetMap" },
-          satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "© CartoDB" },
+          satellite: { type: "raster", tiles: [SATELLITE_TILES], tileSize: 256, attribution: "Tiles © Esri" },
         },
         layers: [
           { id: "satellite-layer", type: "raster", source: "satellite", layout: { visibility: "visible" } },

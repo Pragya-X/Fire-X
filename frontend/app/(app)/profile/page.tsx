@@ -165,8 +165,8 @@ export default function ProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent activity</CardTitle>
-          <span className="text-[10px] uppercase tracking-wider text-muted">audit log</span>
+          <CardTitle>Your recent activity</CardTitle>
+          <span className="text-[10px] uppercase tracking-wider text-muted">Only your actions are listed here</span>
         </CardHeader>
         <CardBody>
           {loadingActivity && <Skeleton className="h-24" />}

@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  BadgeCheck, Loader2, Mail, Plus, Search, Shield, ShieldOff,
+  Activity, BadgeCheck, Loader2, Mail, Plus, Search, Shield, ShieldOff,
   Trash2, UserCog, UserRound, X,
 } from "lucide-react";
-import { adminCreateUser, adminDeleteUser, adminListUsers, adminUpdateUser, type AdminUser } from "@/lib/api";
+import { adminCreateUser, adminDeleteUser, adminListUsers, adminUpdateUser, getAllActivity, type ActivityRow, type AdminUser } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Badge, Button, Card, CardBody, CardHeader, CardTitle, Dialog, Input, Select, useToast } from "@/components/ui/primitives";
+import { timeAgo } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 const ROLES = ["viewer", "field", "analyst", "admin"] as const;
@@ -42,6 +43,19 @@ export default function AdminPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "viewer" });
   const [saving, setSaving] = useState(false);
 
+  // All-users activity log (admin-only scope)
+  const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [activityFilter, setActivityFilter] = useState("all");
+  const [activityLoading, setActivityLoading] = useState(true);
+
+  const loadActivity = useCallback((email: string | null) => {
+    setActivityLoading(true);
+    getAllActivity({ user: email ?? undefined, limit: 100 })
+      .then((r) => setActivity(r.items))
+      .catch((e: Error) => push({ title: "Activity log unavailable", message: e.message, tone: "error" }))
+      .finally(() => setActivityLoading(false));
+  }, [push]);
+
   // Redirect non-admins
   useEffect(() => {
     if (user && user.role !== "admin") router.replace("/");
@@ -60,6 +74,7 @@ export default function AdminPage() {
   }, [push]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadActivity(activityFilter === "all" ? null : activityFilter); }, [activityFilter, loadActivity]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,6 +279,55 @@ export default function AdminPage() {
                           )}
                         </div>
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* All-users activity log (admin all-in-one view) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-1.5">
+            <Activity className="h-4 w-4 text-accent" /> All Activity ({activity.length})
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Select value={activityFilter} onChange={(e) => setActivityFilter(e.target.value)} className="h-8 w-56 text-xs">
+              <option value="all">All users</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.email}>{u.name} ({u.email})</option>
+              ))}
+            </Select>
+            <Button variant="ghost" size="sm" onClick={() => loadActivity(activityFilter === "all" ? null : activityFilter)} disabled={activityLoading}>
+              {activityLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Activity className="h-3.5 w-3.5" />}
+              Refresh
+            </Button>
+          </div>
+        </CardHeader>
+        <CardBody className="p-0">
+          {activity.length === 0 ? (
+            <p className="py-10 text-center text-xs text-muted">{activityLoading ? "Loading activity..." : "No activity recorded."}</p>
+          ) : (
+            <div className="max-h-96 overflow-y-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="sticky top-0 border-b border-base-border/70 bg-base-panel text-muted/70">
+                  <tr>
+                    <th className="px-4 py-2.5 font-medium">Time</th>
+                    <th className="px-4 py-2.5 font-medium">User</th>
+                    <th className="px-4 py-2.5 font-medium">Action</th>
+                    <th className="px-4 py-2.5 font-medium">Entity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activity.map((a) => (
+                    <tr key={a.id} className="border-b border-base-border/40">
+                      <td className="px-4 py-2 text-muted">{a.created_at ? timeAgo(a.created_at) : "—"}</td>
+                      <td className="px-4 py-2 text-secondary">{a.user}</td>
+                      <td className="px-4 py-2"><span className="font-mono text-sky-400">{a.action}</span></td>
+                      <td className="px-4 py-2 text-muted">{a.entity}{a.entity_id ? ` · ${a.entity_id}` : ""}</td>
                     </tr>
                   ))}
                 </tbody>

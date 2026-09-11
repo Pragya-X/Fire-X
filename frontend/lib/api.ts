@@ -249,6 +249,22 @@ export const getCopilotSuggestions = () => request<{ items: string[] }>("/api/v1
 
 export const getSystemHealth = () => request<SystemHealth>("/api/v1/system-health");
 export const getActivity = () => request<{ items: unknown[]; total: number }>("/api/v1/activity");
+export interface ActivityRow {
+  id: number;
+  user: string;
+  action: string;
+  entity: string;
+  entity_id: string;
+  details: Record<string, unknown>;
+  created_at: string | null;
+}
+/** Admin-only: full audit trail across every user (optionally narrowed to one email). */
+export const getAllActivity = (q: { user?: string; limit?: number } = {}) => {
+  const params = new URLSearchParams({ scope: "all" });
+  if (q.user) params.set("user", q.user);
+  if (q.limit) params.set("limit", String(q.limit));
+  return request<{ items: ActivityRow[]; total: number }>(`/api/v1/activity?${params.toString()}`);
+};
 
 // SSE stream URL helper
 export const streamUrl = () => `${API_URL}/api/v1/events/stream`;

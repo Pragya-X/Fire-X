@@ -121,10 +121,14 @@ def _compute_health(db: Session):
         },
         {
             "name": "Notification engine",
-            "status": "operational",
-            "mode": "IN-APP",
+            "status": "operational" if settings.smtp_configured else "degraded",
+            "mode": "SMTP" if settings.smtp_configured else "IN-APP+OUTBOX",
             "latency_ms": 0.0,
-            "detail": "In-app + SSE; SMTP email or local outbox; SMS unavailable",
+            "detail": (
+                f"Email via {settings.SMTP_HOST} (alerts to: {settings.MAIL_ALERT_RECIPIENTS or 'acting user'})"
+                if settings.smtp_configured
+                else "In-app + SSE only; emails land in data/outbox (set SMTP_HOST/SMTP_USER/SMTP_PASSWORD to deliver)"
+            ),
             "last_sync": None,
         },
         {

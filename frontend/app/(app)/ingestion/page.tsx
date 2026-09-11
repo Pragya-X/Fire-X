@@ -116,7 +116,10 @@ export default function IngestionPage() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle>Activity log</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Your activity</CardTitle>
+          <span className="text-[10px] uppercase tracking-wider text-muted">Only your own ingestion actions are shown · admins see all users in the Admin Panel</span>
+        </CardHeader>
         <CardBody className="p-0">
           {activity.length === 0 ? <Skeleton className="m-4 h-32" /> : (
             <table className="w-full text-left text-xs">

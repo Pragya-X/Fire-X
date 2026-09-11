@@ -19,6 +19,34 @@ from app.services.notification_service import notification_service
 from app.services.sse import broadcast
 from app.utils.helpers import Timer
 
+
+def _alert_recipients(db: Session, actor: User) -> list[str]:
+    """Who should receive auto-alert emails: explicit list first, then the acting analyst/admin."""
+    if settings.alert_recipients:
+        return settings.alert_recipients
+    return [actor.email] if actor.email else []
+
+
+def _notify_new_alerts(db: Session, actor: User, new_alerts: list[Alert]) -> None:
+    """One in-app notification + one digest email per sync (the email rate limit
+    allows a single message per recipient every few minutes, so per-alert emails
+    beyond the first would be silently dropped)."""
+    if not new_alerts:
+        return
+    recipients = _alert_recipients(db, actor)
+    lines = "\n".join(f"• {a.code} — {a.title} (risk {a.risk_score:.0f}/100)" for a in new_alerts[:10])
+    more = f"\n…and {len(new_alerts) - 10} more." if len(new_alerts) > 10 else ""
+    notification_service.notify(
+        db,
+        title=f"{len(new_alerts)} new auto-alert{'' if len(new_alerts) == 1 else 's'} generated",
+        message=lines + more,
+        severity="critical" if any(a.severity == "CRITICAL" for a in new_alerts) else "warning",
+        entity="alert", entity_id=new_alerts[0].code,
+        user_id=actor.id,
+        to=", ".join(recipients) if len(recipients) > 1 else (recipients[0] if recipients else None),
+        channels=["in-app", "email"],
+    )
+
 router = APIRouter(prefix="/api/v1/ingest", tags=["ingest"])
 demo_router = APIRouter(prefix="/api/v1/ingest", tags=["demo"])
 
@@ -41,7 +69,8 @@ def get_dataset():
     return _dataset_cache[key]
 
 
-def _upsert_detections(db: Session, records: list[dict], source_tag: str) -> dict:
+def _upsert_detections(db: Session, records: list[dict], source_tag: str, actor: User | None = None) -> dict:
+    actor = actor or User(email="system", name="System", role="system")
     created = 0
     updated = 0
     alerts_before = db.query(Alert).count()
@@ -90,6 +119,7 @@ def _upsert_detections(db: Session, records: list[dict], source_tag: str) -> dic
     db.commit()
     # Auto-alerts for high-risk / high-confidence industrial fires
     alerts_created = 0
+    new_alerts: list[Alert] = []
     new_hotspots = db.query(Hotspot).filter(Hotspot.source == source_tag).order_by(Hotspot.id.desc()).limit(max(created, 1)).all()
     for hs in new_hotspots[:30]:
         if hs.risk_score >= settings.AUTO_ALERT_RISK_THRESHOLD or (
@@ -111,7 +141,10 @@ def _upsert_detections(db: Session, records: list[dict], source_tag: str) -> dic
             db.add(alert)
             db.flush()  # keep Alert.count() accurate for the next iteration
             alerts_created += 1
+            new_alerts.append(alert)
     db.commit()
+    if new_alerts:
+        _notify_new_alerts(db, actor, new_alerts)
     # The map geojson is cached; drop it so the next request sees fresh data.
     from app.routers.hotspots import invalidate_geojson_cache
 
@@ -133,7 +166,7 @@ def ingest_firms(user: User = Depends(require_role("analyst")), db: Session = De
         errors.append(str(exc))
         provider = DemoFireDataProvider()
         records = provider.fetch()
-    result = _upsert_detections(db, records, provider.mode)
+    result = _upsert_detections(db, records, provider.mode, actor=user)
     db.add(ActivityLog(user=user.email, action="data_ingestion", entity="firms", details={"mode": provider.mode, **result}))
     db.commit()
     notification_service.notify(
@@ -151,7 +184,7 @@ def ingest_demo(user: User = Depends(require_role("analyst")), db: Session = Dep
     timer = Timer()
     provider = DemoFireDataProvider()
     records = provider.fetch()
-    result = _upsert_detections(db, records, "demo")
+    result = _upsert_detections(db, records, "demo", actor=user)
     db.add(ActivityLog(user=user.email, action="data_ingestion", entity="demo", details=result))
     notification_service.notify(
         db, title="Sample detection batch ingested",
