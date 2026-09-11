@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.database import SessionLocal, init_db
+from app.services.firms_scheduler import start_scheduler, stop_scheduler
 from app.routers import (
     thermal_events,
     alerts,
@@ -49,7 +50,10 @@ async def lifespan(app: FastAPI):
         db.close()
     except Exception as exc:  # pragma: no cover
         logger.warning("Auto-seed skipped: %s", exc)
+
+    start_scheduler()
     yield
+    stop_scheduler()
     logger.info("FIRE-X backend stopped")
 
 

@@ -18,6 +18,12 @@ from app.providers.satellite import get_satellite_provider
 
 router = APIRouter(prefix="/api/v1/system-health", tags=["system-health"])
 
+# Health probes call external providers (FIRMS, OSM, satellite) and a fresh ML
+# check, which costs ~2s. The dashboard and status bar poll this endpoint, so
+# cache the full response briefly - the data is status info, not live telemetry.
+_HEALTH_CACHE_TTL = 30.0
+_health_cache: dict = {"data": None, "at": 0.0}
+
 
 def _latency_ms(fn) -> float:
     start = time.perf_counter()
@@ -27,6 +33,18 @@ def _latency_ms(fn) -> float:
 
 @router.get("")
 def system_health(db: Session = Depends(get_db)):
+    import time as _time
+
+    now = _time.monotonic()
+    if _health_cache["data"] is not None and now - _health_cache["at"] < _HEALTH_CACHE_TTL:
+        return _health_cache["data"]
+    data = _compute_health(db)
+    _health_cache["data"] = data
+    _health_cache["at"] = now
+    return data
+
+
+def _compute_health(db: Session):
     db_check = check_db()
     firms = get_fire_provider()
     osm = get_osm_provider(db)

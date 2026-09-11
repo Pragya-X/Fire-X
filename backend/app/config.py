@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     # Demo
     DEMO_MODE: bool = True
 
+    # Auto-sync: run the FIRMS ingest on a server-side 2-minute schedule.
+    FIRMS_AUTO_SYNC: bool = True
+
     # Tuning
     AUTO_ALERT_RISK_THRESHOLD: int = 80
 

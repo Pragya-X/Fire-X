@@ -22,8 +22,23 @@ def _make_engine():
     url = settings.DATABASE_URL
     kwargs: dict = {"echo": False, "future": True}
     if url.startswith("sqlite"):
-        kwargs["connect_args"] = {"check_same_thread": False}
+        # WAL lets readers run concurrently with the FIRMS ingest writer instead of
+        # queueing behind its lock; busy_timeout avoids immediate 'database is locked'.
+        kwargs["connect_args"] = {
+            "check_same_thread": False,
+            "timeout": 15,
+        }
     engine = create_engine(url, **kwargs)
+
+    if url.startswith("sqlite"):
+
+        @event.listens_for(engine, "connect")
+        def _set_sqlite_pragmas(dbapi_conn, _record):
+            cur = dbapi_conn.cursor()
+            cur.execute("PRAGMA journal_mode=WAL")
+            cur.execute("PRAGMA synchronous=NORMAL")
+            cur.execute("PRAGMA busy_timeout=15000")
+            cur.close()
 
     if settings.is_postgres:
 
